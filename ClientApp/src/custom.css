@@ -1,14 +1,38 @@
-/* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
+body {
+    background: rgba(181,198,208,1);
+    background: -moz-linear-gradient(left, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(181,198,208,1)), color-stop(49%, rgba(242,246,248,1)), color-stop(100%, rgba(224,239,249,1)));
+    background: -webkit-linear-gradient(left, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
+    background: -o-linear-gradient(left, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
+    background: -ms-linear-gradient(left, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
+    background: linear-gradient(to right, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b5c6d0', endColorstr='#e0eff9', GradientType=1 );
 }
 
-code {
-  color: #E01A76;
+.all {
+    width: 1000px;
+    height: 500px;
+    background: #B3C1E9;
+    border-radius: 15px;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+
+.tablete {
+    
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
+
+.cat{
+    padding-top: 20px;
+    padding-left: 20px;
+    width: 600px;
+}
+
+
+
+
