@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication;
+using Newtonsoft.Json;
 
-namespace WebApplication.Controllers
+namespace WebApplication.Models
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -37,7 +38,6 @@ namespace WebApplication.Controllers
                                      Category = m,
                                  }
             ).ToListAsync();
-            //return await _context.Product.ToListAsync();
         }
 
         // GET: api/Products/5
@@ -90,28 +90,31 @@ namespace WebApplication.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Products>> PostProducts(Products products)
+        public async Task<ActionResult<Products>> PostProducts([FromBody]Products data)
         {
-            _context.Product.Add(products);
+            _context.Product.Add(data);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProducts", new { id = products.ID }, products);
+            return CreatedAtAction("GetProducts", new { id = data.ID }, data);
         }
 
-        // DELETE: api/Products/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Products>> DeleteProducts(int id)
+        // DELETE: api/Products
+        [HttpDelete]
+        public async Task<ActionResult<Products>> DeleteProducts(List<int> productId)
         {
-            var products = await _context.Product.FindAsync(id);
-            if (products == null)
+            foreach (var id in productId)
             {
-                return NotFound();
+                var products = await _context.Product.FindAsync(id);
+                if (products == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Product.Remove(products);
+                await _context.SaveChangesAsync();
             }
 
-            _context.Product.Remove(products);
-            await _context.SaveChangesAsync();
-
-            return products;
+            return Ok("Successfully deleted");
         }
 
         private bool ProductsExists(int id)
