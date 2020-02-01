@@ -1,4 +1,5 @@
 ﻿import React, { Component } from "react";
+import axios from 'axios';
 import data from '../data/names.json';
 import BootstrapTable from "react-bootstrap-table-next";
 import cellEditFactory from "react-bootstrap-table2-editor";
@@ -10,17 +11,45 @@ class Table1 extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            products: [],
             data: []
         };
         this.prices = this.prices.bind(this);
     }
+    getInfo = async () => {
+        try {
+            const response = await axios({
+                url: 'https://localhost:44397/api/Products/',
+                method: 'get'
+            })
+            return response.data;
+        }
+        catch (error) {
+            console.error("For some reason now you can not view your profile, please contact support")
+        }
+    };
+    getPage = async () => {
+        try {
+            const response = await axios({
+                url: 'https://localhost:44397/api/Products/2',
+                method: 'get'
+            })
+            return response.data;
+        }
+        catch (error) {
+            console.error("For some reason now you can not view your profile, please contact support")
+        }
+    };
 
     GetData() {
         this.setState({ data: data })
     }
 
     async componentDidMount() {
+        let allProducts = this.getInfo();
+        await this.setState({ products: allProducts })
         this.GetData();
+        console.log(this.state.products)
     }
 
     prices = action => {
