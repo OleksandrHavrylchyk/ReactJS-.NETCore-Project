@@ -30,6 +30,11 @@ namespace WebApplication.Models
             modelBuilder.Entity<Products>().HasData(new Products { ID = 8, ProductName = "Title 8", Description = "Content 8", CategoryID = 3 });
             modelBuilder.Entity<Products>().HasData(new Products { ID = 9, ProductName = "Title 9", Description = "Content 9", CategoryID = 4 });
             modelBuilder.Entity<Products>().HasData(new Products { ID = 10, ProductName = "Title 10", Description = "Content 10", CategoryID = 5 });
+            modelBuilder.Entity<Products>().HasData(new Products { ID = 11, ProductName = "Title 11", Description = "Content 11", CategoryID = 1 });
+            modelBuilder.Entity<Products>().HasData(new Products { ID = 12, ProductName = "Title 12", Description = "Content 12", CategoryID = 2 });
+            modelBuilder.Entity<Products>().HasData(new Products { ID = 13, ProductName = "Title 13", Description = "Content 13", CategoryID = 3 });
+            modelBuilder.Entity<Products>().HasData(new Products { ID = 14, ProductName = "Title 14", Description = "Content 14", CategoryID = 4 });
+            modelBuilder.Entity<Products>().HasData(new Products { ID = 15, ProductName = "Title 15", Description = "Content 15", CategoryID = 5 });
         }
     }
 }

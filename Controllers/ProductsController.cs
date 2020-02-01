@@ -41,17 +41,29 @@ namespace WebApplication.Models
         }
 
         // GET: api/Products/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Products>> GetProducts(int id)
+        [HttpGet("{page}")]
+        public async Task<ActionResult<Products>> GetProductsPages(int page)
         {
-            var products = await _context.Product.FindAsync(id);
+            int pageSize = 5;
 
-            if (products == null)
+            IQueryable<Products> source = _context.Product.Include(x => x.Category);
+            var count = await source.CountAsync();
+            var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+            if(pageViewModel.PageNumber <= pageViewModel.TotalPages) 
             {
-                return NotFound();
+                IndexViewModel viewModel = new IndexViewModel
+                {
+                    PageViewModel = pageViewModel,
+                    Products = items
+                };
+                return Ok(viewModel);
             }
-
-            return products;
+            else
+            {
+                return BadRequest("Page does not exist");
+            }
         }
 
         // PUT: api/Products/5
