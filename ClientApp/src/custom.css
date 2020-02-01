@@ -1,36 +1,29 @@
 body {
-    background: rgba(181,198,208,1);
-    background: -moz-linear-gradient(left, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
-    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(181,198,208,1)), color-stop(49%, rgba(242,246,248,1)), color-stop(100%, rgba(224,239,249,1)));
-    background: -webkit-linear-gradient(left, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
-    background: -o-linear-gradient(left, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
-    background: -ms-linear-gradient(left, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
-    background: linear-gradient(to right, rgba(181,198,208,1) 0%, rgba(242,246,248,1) 49%, rgba(224,239,249,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b5c6d0', endColorstr='#e0eff9', GradientType=1 );
+    background-color: #FFDD00;
 }
 
-.all {
-    width: 1000px;
-    height: 500px;
-    background: #B3C1E9;
-    border-radius: 15px;
-    margin-top: 10px;
+.Table1 {
+    background-color: #FFFFFF;
+    height: 700px;
+    width: 1100px;
+    margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
-}
-
-
-.tablete {
-    
-    padding-top: 20px;
+    border: 200px inherit #000000;
+    border-radius: 33px 33px 32px 33px;
+    -moz-border-radius: 33px 33px 32px 33px;
+    -webkit-border-radius: 33px 33px 32px 33px;
+    -webkit-box-shadow: 10px 10px 25px -11px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 25px -11px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 25px -11px rgba(0,0,0,0.75);
+    padding-top: 40px;
     padding-left: 20px;
     padding-right: 20px;
 }
 
-.cat{
-    padding-top: 20px;
-    padding-left: 20px;
-    width: 600px;
+.dsd{
+    width: 1000px;
+    color: yellow;
 }
 
 

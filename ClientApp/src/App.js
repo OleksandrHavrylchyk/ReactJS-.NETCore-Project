@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import ItsTable from './components/ItsTable'
+import Table1 from './components/Table1'
 import './custom.css'
 
 import data from './data/names.json'
@@ -7,9 +7,12 @@ import data from './data/names.json'
 class App extends Component {
     render() {
         return (
-            <div className="all">
-                <ItsTable className="tablete" data={data} />
+            <div className="Border1">
+                <div className="Table1">
+                    <Table1 data={data} />
+                </div>
             </div>
+            
         );
     }
 }
