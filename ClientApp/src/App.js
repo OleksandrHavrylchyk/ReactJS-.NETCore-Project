@@ -1,22 +1,40 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { FetchData } from './components/FetchData';
-import { Counter } from './components/Counter';
+﻿import React, { Component } from 'react';
+import Table1 from './components/Table1'
+import './custom.css'
+
+import data from './data/names.json'
+
+class App extends Component {
+    render() {
+        return (
+            <div className="Border1">
+                <div className="Table1">
+                    <Table1 data={data} />
+                </div>
+            </div>
+            
+        );
+    }
+}
+
+export default App;
+
+
+
+/*
+import data from './data/names.json'
 
 import './custom.css'
 
-export default class App extends Component {
-  static displayName = App.name;
+export default function App() {
 
-  render () {
+
     return (
-      <Layout>
-        <Route exact path='/' component={Home} />
-        <Route path='/counter' component={Counter} />
-        <Route path='/fetch-data' component={FetchData} />
-      </Layout>
-    );
-  }
+        <div className="all">
+            <div className="tablete">
+                <ItsTable data={data} />
+            </div>
+        </div>
+    )
 }
+*/
