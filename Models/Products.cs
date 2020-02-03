@@ -11,6 +11,8 @@ namespace WebApplication.Models
         [StringLength(100)]
         public string Description { get; set; }
 
+        public float Price { get; set; }
+
         public int CategoryID { get; set; }
         [ForeignKey("CategoryID")]
         public Categories Category { get; set; }

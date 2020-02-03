@@ -25,19 +25,14 @@ namespace WebApplication.Models
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Products>>> GetProduct()
         {
-            return await (from product in _context.Product
-                                 join category in _context.Category on product.CategoryID equals category.ID into tmp
-                                 from m in tmp.DefaultIfEmpty()
-
-                                 select new Products
-                                 {
-                                     ID = product.ID,
-                                     ProductName = product.ProductName,
-                                     Description = product.Description,
-                                     CategoryID = product.CategoryID,
-                                     Category = m,
-                                 }
-            ).ToListAsync();
+            try
+            {
+                return await _context.Product.Include(x => x.Category).ToListAsync();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         // GET: api/Products/5
@@ -51,7 +46,7 @@ namespace WebApplication.Models
             var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            if(pageViewModel.PageNumber <= pageViewModel.TotalPages) 
+            if(pageViewModel.PageNumber <= pageViewModel.TotalPages && pageViewModel.PageNumber > 0) 
             {
                 IndexViewModel viewModel = new IndexViewModel
                 {
@@ -67,8 +62,6 @@ namespace WebApplication.Models
         }
 
         // PUT: api/Products/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProducts(int id, Products products)
         {
@@ -95,38 +88,50 @@ namespace WebApplication.Models
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetProducts", products);
         }
 
         // POST: api/Products
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
         public async Task<ActionResult<Products>> PostProducts([FromBody]Products data)
         {
-            _context.Product.Add(data);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Product.Add(data);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProducts", new { id = data.ID }, data);
+                return CreatedAtAction("GetProducts", new { id = data.ID }, data);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         // DELETE: api/Products
         [HttpDelete]
         public async Task<ActionResult<Products>> DeleteProducts(List<int> productId)
         {
-            foreach (var id in productId)
+            try
             {
-                var products = await _context.Product.FindAsync(id);
-                if (products == null)
+                foreach (var id in productId)
                 {
-                    return NotFound();
+                    var products = await _context.Product.FindAsync(id);
+                    if (products == null)
+                    {
+                        return NotFound();
+                    }
+
+                    _context.Product.Remove(products);
+                    await _context.SaveChangesAsync();
                 }
 
-                _context.Product.Remove(products);
-                await _context.SaveChangesAsync();
+                return Ok("Successfully deleted");
             }
-
-            return Ok("Successfully deleted");
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         private bool ProductsExists(int id)
