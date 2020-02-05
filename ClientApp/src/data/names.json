@@ -3,42 +3,42 @@
         "id": "1",
         "name": "bmw",
         "category": "car",
-        "price": "5000",
+        "price": "5500",
         "description": "Vrummm"
     },
     {
         "id": "2",
         "name": "mercedes",
         "category": "car",
-        "price": "2000",
+        "price": "5000",
         "description": "Vrummm"
     },
     {
         "id": "3",
         "name": "audi",
         "category": "car",
-        "price": "3232",
+        "price": "6000",
         "description": "Vrummm"
     },
     {
         "id": "4",
-        "name": "audi",
+        "name": "toyota",
         "category": "car",
-        "price": "3232",
+        "price": "4500",
         "description": "Vrummm"
     },
     {
         "id": "5",
-        "name": "audi",
+        "name": "nissan",
         "category": "car",
-        "price": "3232",
+        "price": "4000",
         "description": "Vrummm"
     },
     {
         "id": "6",
-        "name": "audi",
+        "name": "opel",
         "category": "car",
-        "price": "3232",
+        "price": "1000",
         "description": "Vrummm"
     }
 
