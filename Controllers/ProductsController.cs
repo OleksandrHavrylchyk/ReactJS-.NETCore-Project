@@ -20,24 +20,9 @@ namespace WebApplication.Models
         {
             _context = context;
         }
-
-        // GET: api/Products
+        // GET: api/Products/
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Products>>> GetProduct()
-        {
-            try
-            {
-                return await _context.Product.Include(x => x.Category).ToListAsync();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
-        }
-
-        // GET: api/Products/5
-        [HttpGet("{page}")]
-        public async Task<ActionResult<Products>> GetProductsPages(int page)
+        public async Task<ActionResult<Products>> GetProductsPages([FromQuery(Name = "page")]int page)
         {
             int pageSize = 5;
 
