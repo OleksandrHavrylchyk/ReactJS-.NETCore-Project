@@ -22,7 +22,7 @@ namespace WebApplication.Models
         }
         // GET: api/Products/
         [HttpGet]
-        public async Task<ActionResult<Products>> GetProductsPages([FromQuery(Name = "page")]int page)
+        public async Task<IActionResult> GetProductsPages([FromQuery(Name = "page")]int page)
         {
             int pageSize = 5;
 
@@ -95,22 +95,17 @@ namespace WebApplication.Models
 
         // DELETE: api/Products
         [HttpDelete]
-        public async Task<ActionResult<Products>> DeleteProducts(List<int> productId)
+        public async Task<IActionResult> DeleteProducts([FromQuery(Name = "id")]int productId)
         {
             try
             {
-                foreach (var id in productId)
+                var products = await _context.Product.FindAsync(productId);
+                if (products == null)
                 {
-                    var products = await _context.Product.FindAsync(id);
-                    if (products == null)
-                    {
-                        return NotFound();
-                    }
-
-                    _context.Product.Remove(products);
-                    await _context.SaveChangesAsync();
+                    return NotFound();
                 }
-
+                _context.Product.Remove(products);
+                await _context.SaveChangesAsync();
                 return Ok("Successfully deleted");
             }
             catch (Exception e)

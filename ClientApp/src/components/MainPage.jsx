@@ -1,12 +1,18 @@
 ﻿import React from 'react';
 import axios from 'axios';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import ClipLoader from 'react-spinners/ClipLoader';
+import { css } from '@emotion/core';
 import { Button, Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import ProductsTable from "./ProductsTable";
 const axiosInstance = axios.create({
     baseURL: 'https://localhost:44397/api/'
 })
+const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: #FFD466;
+`;
 
 export default class MainPage extends React.Component {
     constructor(props) {
@@ -22,6 +28,7 @@ export default class MainPage extends React.Component {
             description: 'asdfasdf',
             price: 1000,
             categoryID: 2,
+            loading: true,
         };
     }
     getData = async () => {
@@ -33,7 +40,8 @@ export default class MainPage extends React.Component {
             });
             await this.setState({
                 products: response.data.products,
-                numberofpages: response.data.pageViewModel.totalPages
+                numberofpages: response.data.pageViewModel.totalPages,
+                loading: false,
             })
         }
         catch (error) {
@@ -80,6 +88,8 @@ export default class MainPage extends React.Component {
     postProduct = async (sendData) => {
         try {
             await axiosInstance.post('/Products', sendData);
+            await this.setState({ showModal: !this.state.showModal });
+            await this.getData();
         } catch (error) {
             console.error('You cannot add new product');
         }
@@ -101,8 +111,15 @@ export default class MainPage extends React.Component {
             visibpag = 'hidden'
         }
         return (
-                <Container>
-                    <ProductsTable products={this.state.products} />
+            <Container>
+                <ProductsTable products={this.state.products} getData={this.getData} />
+                <ClipLoader
+                    css={override}
+                    sizeUnit={"px"}
+                    size={150}
+                    color={'#32cd32'}
+                    loading={this.state.loading}
+                />
                     <Row>
                         <Col style={{ visibility: visibpag }}>
                             <div actpage={this.state.curentpage}>
@@ -123,13 +140,13 @@ export default class MainPage extends React.Component {
                             <ModalHeader>Modal title</ModalHeader>
                             <ModalBody>
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </ModalBody>
+                            </ModalBody>
                                 <ModalFooter>
                                     <Button color="primary" onClick={this.saveForm} > Do Something</Button>{' '}
                                     <Button color="secondary" onClick={this.showModal}>Cancel</Button>
                             </ModalFooter>
                         </Modal>
-                        </div>
+                    </div>
                     </Col>
                 </Row>
                 </Container>
