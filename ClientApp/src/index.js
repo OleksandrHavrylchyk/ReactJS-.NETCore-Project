@@ -3,7 +3,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Routes from './Routes';
 import registerServiceWorker from './registerServiceWorker';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+toast.configure({
+    position: "bottom-left",
+    autoClose: 1500,
+    hideProgressBar: false,
+    closeOnClick: true,
+    draggable: true,
+})
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');

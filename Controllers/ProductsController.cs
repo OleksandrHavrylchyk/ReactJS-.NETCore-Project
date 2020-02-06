@@ -46,9 +46,9 @@ namespace WebApplication.Models
             }
         }
 
-        // PUT: api/Products/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProducts(int id, Products products)
+        // PUT: api/Products
+        [HttpPut]
+        public async Task<IActionResult> PutProducts([FromQuery(Name = "id")]int id, Products products)
         {
             if (id != products.ID)
             {

@@ -1,13 +1,13 @@
 ﻿import React from 'react';
-import axios from 'axios';
+
 import ClipLoader from 'react-spinners/ClipLoader';
 import { css } from '@emotion/core';
-import { Button, Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
+import { toast } from 'react-toastify';
 
 import ProductsTable from "./ProductsTable";
-const axiosInstance = axios.create({
-    baseURL: 'https://localhost:44397/api/'
-})
+import { axiosInstance } from '../axiosConfiguration';
+
 const override = css`
     display: block;
     margin: 0 auto;
@@ -45,7 +45,7 @@ export default class MainPage extends React.Component {
             })
         }
         catch (error) {
-            console.error("For some reason now you can not view products");
+            toast.error("For some reason now you can not view products");
         }
     }
     getCategories = async() => {
@@ -56,7 +56,7 @@ export default class MainPage extends React.Component {
             })
         }
         catch(error) {
-            console.error("For some reason now you can not view categories");
+            console.error("For some reason now application can not get categories");
         }
     }
     changePages = async (index) => {
@@ -90,8 +90,9 @@ export default class MainPage extends React.Component {
             await axiosInstance.post('/Products', sendData);
             await this.setState({ showModal: !this.state.showModal });
             await this.getData();
+            toast.success("Added new product")
         } catch (error) {
-            console.error('You cannot add new product');
+            toast.error('You cannot add new product');
         }
     }
 
@@ -112,7 +113,7 @@ export default class MainPage extends React.Component {
         }
         return (
             <Container>
-                <ProductsTable products={this.state.products} getData={this.getData} />
+                <ProductsTable products={this.state.products} getData={this.getData} categories={this.state.categories} />
                 <ClipLoader
                     css={override}
                     sizeUnit={"px"}
@@ -138,9 +139,11 @@ export default class MainPage extends React.Component {
                     <div>
                         <Modal isOpen={this.state.showModal}>
                             <ModalHeader>Modal title</ModalHeader>
-                            <ModalBody>
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </ModalBody>
+                                <ModalBody>
+                                    <Form method="POST">
+                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                    </Form>
+                                </ModalBody>
                                 <ModalFooter>
                                     <Button color="primary" onClick={this.saveForm} > Do Something</Button>{' '}
                                     <Button color="secondary" onClick={this.showModal}>Cancel</Button>
