@@ -46,13 +46,17 @@ export default class MainPage extends React.Component {
         }
         catch (error) {
             toast.error("For some reason now you can not view products");
+            this.setState({
+                loading: false,
+            })
         }
     }
     getCategories = async() => {
         try {
             const response = await axiosInstance.get('/Categories');
             await this.setState({
-                categories: response.data,
+                categories: response.data["categories"],
+                pricesForFilter: response.data["prices"],
             })
         }
         catch(error) {
@@ -73,6 +77,11 @@ export default class MainPage extends React.Component {
         await this.getData();
         await this.getCategories();
     }
+    /*async componentWillMount() {
+        if (Object.keys(this.props).length !== 0) {
+            await this.setState({ curentpage: this.props.match.params.page });
+        }
+    }*/
     showModal = async () => {
         await this.setState({ showModal: !this.state.showModal});
     }
@@ -121,8 +130,8 @@ export default class MainPage extends React.Component {
                     color={'#32cd32'}
                     loading={this.state.loading}
                 />
-                    <Row>
-                        <Col style={{ visibility: visibpag }}>
+                <Row>
+                    <Col style={{ visibility: visibpag }}>
                             <div actpage={this.state.curentpage}>
                                 <span
                                     onClick={(e) => this.changePrevNext(-1)}

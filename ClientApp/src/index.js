@@ -8,8 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 toast.configure({
     position: "bottom-left",
-    autoClose: 1500,
+    autoClose: 2000,
     hideProgressBar: false,
+    pauseOnHover: true,
     closeOnClick: true,
     draggable: true,
 })

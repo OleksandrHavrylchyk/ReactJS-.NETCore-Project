@@ -24,7 +24,20 @@ namespace WebApplication.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categories>>> GetCategory()
         {
-            return await _context.Category.ToListAsync();
+            IQueryable<Products> source = _context.Product.Include(x => x.Category);
+            var maxPrice = source.Max(p => p.Price);
+            var minPrice = source.Min(p => p.Price);
+
+            Dictionary<string, float> prices = new Dictionary<string, float>();
+            prices.Add("maxPrice", maxPrice);
+            prices.Add("minPrice", minPrice);
+
+            var categories = await _context.Category.ToListAsync();
+
+            Dictionary<string, object> response = new Dictionary<string, object>(); 
+            response.Add("categories", categories);
+            response.Add("prices", prices);
+            return Ok(response);
         }
     }
 }
