@@ -6,6 +6,8 @@ import registerServiceWorker from './registerServiceWorker';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import './custom.css';
+
 toast.configure({
     position: "bottom-left",
     autoClose: 2000,

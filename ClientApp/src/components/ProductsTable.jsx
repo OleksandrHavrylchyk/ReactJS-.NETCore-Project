@@ -1,9 +1,12 @@
 ﻿import React from 'react';
 
-import { Button, Table, Modal, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
+import { Button, Table, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
 import { toast } from 'react-toastify';
 
 import { axiosInstance } from '../axiosConfiguration';
+
+import { MdDeleteForever } from 'react-icons/md';
+import { FaEdit } from 'react-icons/fa';
 
 export default class ProductsTable extends React.Component {
     constructor(props) {
@@ -91,12 +94,12 @@ export default class ProductsTable extends React.Component {
                 <Table>
                     <thead>
                         <tr>
-                            <th>№</th>
+                            <th >№</th>
                             <th>Name</th>
-                            <th>Description</th>
+                            <th >Description</th>
                             <th>Category</th>
                             <th>Price</th>
-                            <th>Actions</th>
+                            <th width="150px">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,10 +110,10 @@ export default class ProductsTable extends React.Component {
                                 <td>{item.productName}</td>
                                 <td>{item.description}</td>
                                 <td>{item.category.categoryName}</td>
-                                <td>{item.price}</td>
-                                <td>
-                                        <Button color="danger" onClick={() => this.showModalDelete(item)}>Delete</Button>
-                                        <Button color="primary" onClick={() => this.showModalEdit(item)}>Edit</Button>
+                                    <td>{item.price}</td>
+                                    <td>
+                                        <Button className="DeleteButton" color="danger" onClick={() => this.showModalDelete(item)}><MdDeleteForever /></Button>
+                                        <Button className="EditButton" color="primary" onClick={() => this.showModalEdit(item)}><FaEdit /></Button>
                                 </td>
                             </tr>
                             )
@@ -123,15 +126,17 @@ export default class ProductsTable extends React.Component {
                             Are you sure you want to delete this product?
                         </ModalBody>
                         <ModalFooter>
-                            <Button color="primary" onClick={this.deleteProduct} > Do Something</Button>{' '}
+                            <Button color="primary" onClick={this.deleteProduct} > Yes </Button>{' '}
                             <Button color="secondary" onClick={this.showModalDelete}>Cancel</Button>
                         </ModalFooter>
                     </Modal>
                 </div>
                 <div>
                     <Modal isOpen={this.state.showModalEdit}>
+                        <ModalHeader>Edit product</ModalHeader>
                         <ModalBody>
                             <Form onSubmit={this.handleSubmit}>
+                                <label>Product name</label>
                                 <Input
                                     type="productName"
                                     name="productName"
@@ -140,6 +145,7 @@ export default class ProductsTable extends React.Component {
                                     placeholder="Enter product name"
                                     value={this.state.productName}
                                 />
+                                <label>Description</label>
                                 <Input
                                     type="description"
                                     name="description"
@@ -148,6 +154,7 @@ export default class ProductsTable extends React.Component {
                                     placeholder="Enter product description"
                                     value={this.state.description}
                                 />
+                                <label>Price</label>
                                 <Input
                                     type="number"
                                     name="price"
@@ -156,6 +163,7 @@ export default class ProductsTable extends React.Component {
                                     placeholder="Enter product price"
                                     value={this.state.price}
                                 />
+                                <label>Category</label>
                                 <Input
                                     type="select"
                                     name="categoryID"
@@ -167,7 +175,7 @@ export default class ProductsTable extends React.Component {
                             </Form>
                         </ModalBody>
                         <ModalFooter>
-                            <Button type="submit" color="primary" onClick={this.editProduct} > Do Something</Button>{' '}
+                            <Button type="submit" color="primary" onClick={this.editProduct} > Edit </Button>{' '}
                             <Button color="secondary" onClick={this.showModalEdit}>Cancel</Button>
                         </ModalFooter>
                     </Modal>

@@ -15,12 +15,12 @@ namespace WebApplication.Models
         => options.UseSqlite("Data Source=database.db");
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 1, CategoryName = "Category 1" });
-            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 2, CategoryName = "Category 2" });
-            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 3, CategoryName = "Category 3" });
-            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 4, CategoryName = "Category 4" });
-            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 5, CategoryName = "Category 5" });
-            modelBuilder.Entity<Products>().HasData(new Products { ID = 1, ProductName = "Title 1", Description = "Content 1", CategoryID = 1, Price = 10.73f });
+            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 1, CategoryName = "Car" });
+            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 2, CategoryName = "Smartphone" });
+            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 3, CategoryName = "Laptop" });
+            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 4, CategoryName = "TV" });
+            modelBuilder.Entity<Categories>().HasData(new Categories { ID = 5, CategoryName = "PC" });
+            modelBuilder.Entity<Products>().HasData(new Products { ID = 1, ProductName = "BMW", Description = "Bayerische Motoren Werke", CategoryID = 1, Price = 5000f });
             modelBuilder.Entity<Products>().HasData(new Products { ID = 2, ProductName = "Title 2", Description = "Content 2", CategoryID = 2, Price = 5.50f });
             modelBuilder.Entity<Products>().HasData(new Products { ID = 3, ProductName = "Title 3", Description = "Content 3", CategoryID = 3, Price = 20.50f });
             modelBuilder.Entity<Products>().HasData(new Products { ID = 4, ProductName = "Title 4", Description = "Content 4", CategoryID = 4, Price = 15.50f });

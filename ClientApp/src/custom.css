@@ -1,31 +1,65 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
 body {
-    background-color: #FFDD00;
+    font-family: 'Roboto', sans-serif;
 }
 
-.Table1 {
-    background-color: #FFFFFF;
-    height: 700px;
-    width: 1100px;
-    margin-top: 20px;
+span {
+    color: steelblue;
     margin-left: auto;
-    margin-right: auto;
-    border: 200px inherit #000000;
-    border-radius: 33px 33px 32px 33px;
-    -moz-border-radius: 33px 33px 32px 33px;
-    -webkit-border-radius: 33px 33px 32px 33px;
-    -webkit-box-shadow: 10px 10px 25px -11px rgba(0,0,0,0.75);
-    -moz-box-shadow: 10px 10px 25px -11px rgba(0,0,0,0.75);
-    box-shadow: 10px 10px 25px -11px rgba(0,0,0,0.75);
-    padding-top: 40px;
-    padding-left: 20px;
-    padding-right: 20px;
+    position: relative;
+    z-index: 5;
+    display: inline-block;
+    min-width: 40px;
+    padding-right: 4px;
+    padding-left: 4px;
+    -webkit-box-sizing: border-box;
+    -webkit-user-select: none;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 20px;
+    line-height: 40px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.dsd{
-    width: 1000px;
-    color: yellow;
+.pagi:hover{
+    color: red;
+    text-decoration: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+    }
+
+div.col {
+    padding-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center
 }
 
 
+
+span.Prever {
+    color: steelblue;
+    padding-right: 50px;
+}
+
+span.Prever:hover {
+    color: red;
+}
+
+span.Nexter {
+    color: steelblue;
+    padding-left: 50px;
+}
+
+span.Nexter:hover {
+    color: red;
+}
+
+.EditButton, .AddButton, .DeleteButton {
+    width: 50px;
+}
 
 
