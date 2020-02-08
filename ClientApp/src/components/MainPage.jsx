@@ -11,7 +11,7 @@ import { axiosInstance } from '../axiosConfiguration';
 const override = css`
     display: block;
     margin: 0 auto;
-    border-color: #FFD466;
+    border-color: gray;
 `;
 
 export default class MainPage extends React.Component {
@@ -126,8 +126,7 @@ export default class MainPage extends React.Component {
                 <ClipLoader
                     css={override}
                     sizeUnit={"px"}
-                    size={150}
-                    color={'#32cd32'}
+                    size={200}
                     loading={this.state.loading}
                 />
                 <Row>
