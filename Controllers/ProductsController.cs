@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication;
-using Newtonsoft.Json;
 
 namespace WebApplication.Models
 {
@@ -22,11 +21,54 @@ namespace WebApplication.Models
         }
         // GET: api/Products/
         [HttpGet]
-        public async Task<IActionResult> GetProductsPages([FromQuery(Name = "page")]int page)
+        public async Task<IActionResult> GetProductsPages(
+            [FromQuery(Name = "page")]int page,
+            [FromQuery(Name = "search")]string searchString,
+            [FromQuery(Name = "sort")]string sortField,
+            [FromQuery(Name = "category")]string searchCategory,
+            [FromQuery(Name = "price")]string searchPrice)
         {
             int pageSize = 5;
-
             IQueryable<Products> source = _context.Product.Include(x => x.Category);
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                source = source.Where(p => p.ProductName.Contains(searchString));
+            }
+            if (!String.IsNullOrEmpty(searchCategory))
+            {
+                source = source.Where(p => p.Category.CategoryName.Contains(searchCategory));
+            }
+            if (!String.IsNullOrEmpty(searchPrice))
+            {
+                int index = searchPrice.IndexOf("-");
+                float firstValue = (float)Convert.ToDouble(searchPrice.Substring(0, index));
+                float lastValue = (float)Convert.ToDouble(searchPrice.Substring(index + 1));
+                source = source.Where(p => p.Price >= firstValue && p.Price <= lastValue);
+            }
+            if (!String.IsNullOrEmpty(sortField))
+            {
+                switch (sortField)
+                    {
+                        case "expensive":
+                            source = source.OrderByDescending(s => s.Price);
+                            break;
+                        case "cheap":
+                            source = source.OrderBy(s => s.Price);
+                            break;
+                        case "name_az":
+                            source = source.OrderBy(s => s.ProductName);
+                            break;
+                        case "name_za":
+                            source = source.OrderByDescending(s => s.ProductName);
+                            break;
+                        case "category_az":
+                            source = source.OrderBy(s => s.Category.CategoryName);
+                            break;
+                        case "category_za":
+                            source = source.OrderByDescending(s => s.Category.CategoryName);
+                            break;
+                }
+            }
             var count = await source.CountAsync();
             var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 

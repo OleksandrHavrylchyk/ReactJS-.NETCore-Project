@@ -20,6 +20,9 @@ export default class ProductsTable extends React.Component {
             description: '',
             price: 0,
             categoryID: 1,
+            productNameError: '',
+            descriptionError: '',
+            priceError: '',
         };
     }
     deleteProduct = async () => {
@@ -41,12 +44,31 @@ export default class ProductsTable extends React.Component {
         }
     }
     editProduct = async () => {
-        let sendData = {};
-        sendData.id = this.state.id;
-        sendData.productName = this.state.productName;
-        sendData.description = this.state.description;
-        sendData.price = parseFloat(this.state.price);
-        sendData.categoryID = this.state.categoryID;
+        const isValid = this.validate();
+
+        if (isValid) {
+            toast.error('You cannot add new product');
+
+        } else {
+            let sendData = {};
+
+            sendData.id = this.state.id;
+            sendData.productName = this.state.productName;
+            sendData.description = this.state.description;
+            sendData.price = parseFloat(this.state.price);
+            sendData.categoryID = this.state.categoryID;
+            await this.postProduct(sendData);
+            await this.props.getData();
+            this.state.productName = '';
+            this.state.description = '';
+            this.state.price = 0;
+            this.state.productNameError = '';
+            this.state.descriptionError = '';
+            this.state.priceError = '';
+        }
+    }
+
+    postProduct = async (sendData) => {
         try {
             await axiosInstance.put('/Products', sendData, {
                 params: {
@@ -60,6 +82,7 @@ export default class ProductsTable extends React.Component {
             toast.error('You cannot edit product');
         }
     }
+
     showModalDelete = async (item) => {
         await this.setState({ showModalDelete: !this.state.showModalDelete, deletedProduct: item });
     }
@@ -83,6 +106,33 @@ export default class ProductsTable extends React.Component {
             categoryID: event.target.options.selectedIndex + 1,
         });
     }
+
+
+    validate = () => {
+        let productNameError = '';
+        let descriptionError = '';
+        let priceError = '';
+
+        if (!this.state.productName) {
+            productNameError = 'Name is empty!';
+        }
+
+        if (!this.state.description) {
+            descriptionError = 'Description is empty!';
+        }
+
+        if (parseFloat(this.state.price) < 0) {
+            priceError = 'Wrong price!';
+        }
+
+        if (productNameError || descriptionError || priceError) {
+            this.setState({ productNameError, descriptionError, priceError });
+            return true;
+        }
+
+        return false;
+    };
+
     handleSubmit = (event) => {
         event.preventDefault();
     }
@@ -145,6 +195,11 @@ export default class ProductsTable extends React.Component {
                                     placeholder="Enter product name"
                                     value={this.state.productName}
                                 />
+
+                                <div style={{ fontSize: 12, color: "red" }}>
+                                    {this.state.productNameError}
+                                </div>
+
                                 <label>Description</label>
                                 <Input
                                     type="description"
@@ -154,6 +209,11 @@ export default class ProductsTable extends React.Component {
                                     placeholder="Enter product description"
                                     value={this.state.description}
                                 />
+
+                                <div style={{ fontSize: 12, color: "red" }}>
+                                    {this.state.descriptionError}
+                                </div>
+
                                 <label>Price</label>
                                 <Input
                                     type="number"
@@ -163,6 +223,11 @@ export default class ProductsTable extends React.Component {
                                     placeholder="Enter product price"
                                     value={this.state.price}
                                 />
+
+                                <div style={{ fontSize: 12, color: "red" }}>
+                                    {this.state.priceError}
+                                </div>
+
                                 <label>Category</label>
                                 <Input
                                     type="select"

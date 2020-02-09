@@ -14,7 +14,7 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 const override = css`
     display: block;
     margin: 0 auto;
-    border-color: #FFD466;
+    border-color: gray;
 `;
 
 export default class MainPage extends React.Component {
@@ -32,6 +32,9 @@ export default class MainPage extends React.Component {
             price: 0,
             categoryID: 1,
             loading: true,
+            productNameError: '',
+            descriptionError: '',
+            priceError: '',
         };
     }
     getData = async () => {
@@ -49,13 +52,17 @@ export default class MainPage extends React.Component {
         }
         catch (error) {
             toast.error("For some reason now you can not view products");
+            this.setState({
+                loading: false,
+            })
         }
     }
     getCategories = async() => {
         try {
             const response = await axiosInstance.get('/Categories');
             await this.setState({
-                categories: response.data,
+                categories: response.data["categories"],
+                pricesForFilter: response.data["prices"],
             })
         }
         catch(error) {
@@ -76,16 +83,24 @@ export default class MainPage extends React.Component {
         await this.getData();
         await this.getCategories();
     }
+    /*async componentWillMount() {
+        if (Object.keys(this.props).length !== 0) {
+            await this.setState({ curentpage: this.props.match.params.page });
+        }
+    }*/
     showModal = async () => {
         await this.setState({ showModal: !this.state.showModal});
     }
 
     saveForm = async () => {
+        const isValid = this.validate();
 
-        if (this.state.productName === '' || this.state.description === '') {
+        if (isValid) {
             toast.error('You cannot add new product');
+
         } else {
             let sendData = {};
+            
             sendData.productName = this.state.productName;
             sendData.description = this.state.description;
             sendData.price = parseFloat(this.state.price);
@@ -95,6 +110,9 @@ export default class MainPage extends React.Component {
             this.state.productName = '';
             this.state.description = '';
             this.state.price = 0;
+            this.state.productNameError = '';
+            this.state.descriptionError = '';
+            this.state.priceError = '';
         }
 
     }
@@ -122,11 +140,34 @@ export default class MainPage extends React.Component {
         });
     }
 
+    validate = () => {
+        let productNameError = '';
+        let descriptionError = '';
+        let priceError = '';
+
+        if (!this.state.productName) {
+            productNameError = 'Name is empty!';
+        }
+
+        if (!this.state.description) {
+            descriptionError = 'Description is empty!';
+        }
+
+        if (parseFloat(this.state.price) <= 0) {
+            priceError = 'Wrong price!';
+        }
+
+        if (productNameError || descriptionError || priceError) {
+            this.setState({ productNameError, descriptionError, priceError });
+            return true;
+        }
+
+        return false;
+    };
+
     handleSubmit = (event) => {
         event.preventDefault();
-    }
-    ///
-    
+    };
 
     render() {
 
@@ -157,8 +198,7 @@ export default class MainPage extends React.Component {
                 <ClipLoader
                     css={override}
                     sizeUnit={"px"}
-                    size={150}
-                    color={'#32cd32'}
+                    size={200}
                     loading={this.state.loading}
                 />
                 <Row>
@@ -191,6 +231,11 @@ export default class MainPage extends React.Component {
                                             onChange={(e) => this.addField(e)}
                                             placeholder="Enter product name"
                                         />
+
+                                        <div style={{ fontSize: 12, color: "red" }}>
+                                            {this.state.productNameError}
+                                        </div>
+
                                         <label>Description</label>
                                         <Input
                                             type="description"
@@ -199,6 +244,11 @@ export default class MainPage extends React.Component {
                                             onChange={(e) => this.addField(e)}
                                             placeholder="Enter product description" 
                                         />
+                                        <div style={{ fontSize: 12, color: "red" }}>
+                                            {this.state.descriptionError}
+                                        </div>
+                                        
+
                                         <label>Price</label>
                                         <Input
                                             type="number"
@@ -207,6 +257,12 @@ export default class MainPage extends React.Component {
                                             onChange={(e) => this.addField(e)}
                                             placeholder="Enter product price"
                                         />
+
+                                        <div style={{ fontSize: 12, color: "red" }}>
+                                            {this.state.priceError}
+                                        </div>
+
+
                                         <label>Category</label>
                                         <Input
                                             type="select"
