@@ -1,15 +1,21 @@
 ﻿import React from 'react';
+
 import ClipLoader from 'react-spinners/ClipLoader';
 import { css } from '@emotion/core';
-import { Button, Input, Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
+import { Button, Input, Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label } from 'reactstrap';
+import InputRange from 'react-input-range';
+import 'react-input-range/lib/css/index.css';
 import { toast } from 'react-toastify';
-import '../custom.css';
+
 import ProductsTable from "./ProductsTable";
+import '../custom.css';
 import { axiosInstance } from '../axiosConfiguration';
 
 
 import { IoMdAdd } from 'react-icons/io';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import {
+    FaArrowLeft, FaArrowRight, FaSearch, FaSortAlphaDown,
+    FaSortAlphaUp, FaSortNumericDown, FaSortNumericUp } from 'react-icons/fa';
 
 const override = css`
     display: block;
@@ -26,6 +32,12 @@ export default class MainPage extends React.Component {
             curentpage: 1,
             products: [],
             categories: [],
+            pricesForFilter: [],
+            searchPrice: {
+                min: 0,
+                max: 50,
+            },
+            searchPriceFlag: false,
             showModal: false,
             productName: '',
             description: '',
@@ -34,57 +46,73 @@ export default class MainPage extends React.Component {
             loading: true,
         };
     }
+
     getData = async () => {
         try {
             const response = await axiosInstance.get('/Products', {
                 params: {
                     page: this.state.curentpage,
+                    search: this.state.searchName ? this.state.searchName : null,
+                    sort: this.state.sorting ? this.state.sorting : null,
+                    category: this.state.filterCategory ? this.state.filterCategory : null,
+                    price: this.state.searchPriceFlag ? (this.state.searchPrice["min"] + "-" + this.state.searchPrice["max"]).replace(/\./g, ',') : null,
                 }
             });
             await this.setState({
                 products: response.data.products,
                 numberofpages: response.data.pageViewModel.totalPages,
                 loading: false,
+                noProducts: false,
             })
         }
         catch (error) {
-            toast.error("For some reason now you can not view products");
+            if (this.state.searchName || this.state.sorting || this.state.filterCategory || this.state.searchPrice) {
+                await this.setState({
+                    products: [],
+                    noProducts: true,
+                    numberofpages: 0,
+                })
+            }
+            else {
+                toast.error("For some reason now you can not view products");
+            }
             this.setState({
                 loading: false,
             })
         }
     }
+
     getCategories = async() => {
         try {
             const response = await axiosInstance.get('/Categories');
             await this.setState({
                 categories: response.data["categories"],
                 pricesForFilter: response.data["prices"],
+                searchPrice: response.data["prices"],
             })
         }
         catch(error) {
             console.error("For some reason now application can not get categories");
         }
     }
+
     changePages = async (index) => {
         await this.setState({ curentpage: index })
-        await this.getData()
+        await this.getData();
     }
+
     changePrevNext = async (param) => {
         if (this.state.curentpage + param <= this.state.numberofpages && this.state.curentpage + param > 0) {
             await this.setState({ curentpage: (this.state.curentpage + param) });
             await this.getData();
         }
     }
+
     async componentDidMount() {
-        await this.getData();
         await this.getCategories();
+        await this.getData();
     }
-    /*async componentWillMount() {
-        if (Object.keys(this.props).length !== 0) {
-            await this.setState({ curentpage: this.props.match.params.page });
-        }
-    }*/
+
     showModal = async () => {
         await this.setState({ showModal: !this.state.showModal});
     }
@@ -107,11 +135,13 @@ export default class MainPage extends React.Component {
         }
 
     }
+
     postProduct = async (sendData) => {
         try {
             await axiosInstance.post('/Products', sendData);
             await this.setState({ showModal: !this.state.showModal });
             await this.getData();
+            await this.getCategories();
             toast.success("Added new product")
         } catch (error) {
             toast.error('You cannot add new product');
@@ -131,9 +161,39 @@ export default class MainPage extends React.Component {
         });
     }
 
+    searchData = async (event) => {
+        await this.setState({
+            searchName: event.target.value,
+            curentpage: 1,
+        });
+        await this.getData();
+    }
+
     handleSubmit = (event) => {
         event.preventDefault();
     }
+
+    searchByPrice = async () => {
+        await this.setState({
+            curentpage: 1,
+            searchPriceFlag: true,
+        });
+        this.getData();
+    }
+    sortBy = async (flag) => {
+        await this.setState({
+            sorting: flag,
+        });
+        this.getData();
+    }
+    filterByCategory = async (category) => {
+        await this.setState({
+            filterCategory: category,
+            curentpage: 1,
+        });
+        this.getData();
+    }
+
     render() {
 
         let pages = []
@@ -144,7 +204,7 @@ export default class MainPage extends React.Component {
             }
             pages.push(
                 <span
-                    
+                    href={`/page=${i}`}
                     style={{ color: colr }}
                     
                     key={i + 1}
@@ -159,7 +219,12 @@ export default class MainPage extends React.Component {
         }
         return (
             <Container>
-                <ProductsTable products={this.state.products} getData={this.getData} categories={this.state.categories} />
+                <ProductsTable
+                    products={this.state.products}
+                    getData={this.getData}
+                    getCategories={this.getCategories}
+                    categories={this.state.categories}
+                    noProducts={this.state.noProducts} />
                 <ClipLoader
                     css={override}
                     sizeUnit={"px"}
@@ -225,7 +290,6 @@ export default class MainPage extends React.Component {
                                     </Form>
                                 </ModalBody>
                                 <ModalFooter>
-                                    
                                     <Button color="primary" onClick={this.saveForm} > Add </Button>{' '}
                                     <Button color="secondary" onClick={this.showModal}>Cancel</Button>
                             </ModalFooter>
@@ -233,6 +297,95 @@ export default class MainPage extends React.Component {
                     </div>
                     </Col>
                 </Row>
+                <Row>
+                    <Col>
+                        <InputRange
+                            draggableTrack
+                            step={0.5}
+                            maxValue={this.state.pricesForFilter["max"]}
+                            minValue={this.state.pricesForFilter["min"]}
+                            onChange={value => this.setState({ searchPrice: value })}
+                            value={this.state.searchPrice} />
+                    </Col>
+                    <Col>
+                        <form action="" autoComplete="on">
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                <input id="search"
+                                    name="search"
+                                    type="text"
+                                    placeholder="Search by name"
+                                    onChange={(event) => { this.searchData(event) }}
+                                />
+                                <FaSearch style={{ margin: "auto", fontSize: "40px", paddingLeft: "5px" }} />
+                            </div>
+                        </form>
+                    </Col>
+                </Row>
+                <div>{this.state.searchPrice["min"]}</div>
+                <div>{this.state.searchPrice["max"]}</div>
+                <Button color="secondary" onClick={this.searchByPrice}>OK</Button>
+                <Form>
+                    <FormGroup tag="fieldset">
+                        <legend>Sort by</legend>
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_az")}/>{' '}
+                                Product name <FaSortAlphaDown />
+                            </Label>
+                        </FormGroup>
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_za")}/>{' '}
+                                Product name <FaSortAlphaUp />
+                            </Label>
+                        </FormGroup>
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_az")}/>{' '}
+                                Category <FaSortAlphaDown />
+                            </Label>
+                        </FormGroup>
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_za")}/>{' '}
+                                Category <FaSortAlphaUp />
+                            </Label>
+                        </FormGroup>
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("expensive")}/>{' '}
+                                From expensive to cheap
+                            </Label>
+                        </FormGroup>
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("cheap")}/>{' '}
+                                From cheap to expensive
+                            </Label>
+                        </FormGroup>
+                    </FormGroup>
+                </Form>
+                <Form>
+                    <FormGroup tag="fieldset">
+                        <legend>Filter by categories</legend>
+                        {this.state.categories.map((item, i) => {
+                            return (
+                                <FormGroup key={i} check>
+                                    <Label check>
+                                        <Input type="radio" name="radio" onClick={() => this.filterByCategory(item.categoryName)} />{' '}
+                                        {item.categoryName}
+                                    </Label>
+                                </FormGroup>
+                            )
+                        })}
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="radio" name="radio" onClick={() => this.filterByCategory(null)}/>{' '}
+                                Cancel
+                            </Label>
+                        </FormGroup>
+                    </FormGroup>
+                </Form>
                 </Container>
             )
     }
