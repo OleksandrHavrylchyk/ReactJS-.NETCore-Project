@@ -44,6 +44,9 @@ export default class MainPage extends React.Component {
             price: 0,
             categoryID: 1,
             loading: true,
+            productNameError: '',
+            descriptionError: '',
+            priceError: '',
         };
     }
 
@@ -76,6 +79,7 @@ export default class MainPage extends React.Component {
             else {
                 toast.error("For some reason now you can not view products");
             }
+            toast.error("For some reason now you can not view products");
             this.setState({
                 loading: false,
             })
@@ -112,17 +116,19 @@ export default class MainPage extends React.Component {
         await this.getCategories();
         await this.getData();
     }
-
     showModal = async () => {
         await this.setState({ showModal: !this.state.showModal});
     }
 
     saveForm = async () => {
+        const isValid = this.validate();
 
-        if (this.state.productName === '' || this.state.description === '') {
+        if (isValid) {
             toast.error('You cannot add new product');
+
         } else {
             let sendData = {};
+            
             sendData.productName = this.state.productName;
             sendData.description = this.state.description;
             sendData.price = parseFloat(this.state.price);
@@ -132,6 +138,9 @@ export default class MainPage extends React.Component {
             this.state.productName = '';
             this.state.description = '';
             this.state.price = 0;
+            this.state.productNameError = '';
+            this.state.descriptionError = '';
+            this.state.priceError = '';
         }
 
     }
@@ -160,7 +169,6 @@ export default class MainPage extends React.Component {
             categoryID: event.target.options.selectedIndex + 1,
         });
     }
-
     searchData = async (event) => {
         await this.setState({
             searchName: event.target.value,
@@ -193,7 +201,34 @@ export default class MainPage extends React.Component {
         });
         this.getData();
     }
+    validate = () => {
+        let productNameError = '';
+        let descriptionError = '';
+        let priceError = '';
 
+        if (!this.state.productName) {
+            productNameError = 'Name is empty!';
+        }
+
+        if (!this.state.description) {
+            descriptionError = 'Description is empty!';
+        }
+
+        if (parseFloat(this.state.price) <= 0) {
+            priceError = 'Wrong price!';
+        }
+
+        if (productNameError || descriptionError || priceError) {
+            this.setState({ productNameError, descriptionError, priceError });
+            return true;
+        }
+
+        return false;
+    };
+
+    handleSubmit = (event) => {
+        event.preventDefault();
+    };
     render() {
 
         let pages = []
@@ -261,6 +296,11 @@ export default class MainPage extends React.Component {
                                             onChange={(e) => this.addField(e)}
                                             placeholder="Enter product name"
                                         />
+
+                                        <div style={{ fontSize: 12, color: "red" }}>
+                                            {this.state.productNameError}
+                                        </div>
+
                                         <label>Description</label>
                                         <Input
                                             type="description"
@@ -269,6 +309,11 @@ export default class MainPage extends React.Component {
                                             onChange={(e) => this.addField(e)}
                                             placeholder="Enter product description" 
                                         />
+                                        <div style={{ fontSize: 12, color: "red" }}>
+                                            {this.state.descriptionError}
+                                        </div>
+                                        
+
                                         <label>Price</label>
                                         <Input
                                             type="number"
@@ -277,6 +322,12 @@ export default class MainPage extends React.Component {
                                             onChange={(e) => this.addField(e)}
                                             placeholder="Enter product price"
                                         />
+
+                                        <div style={{ fontSize: 12, color: "red" }}>
+                                            {this.state.priceError}
+                                        </div>
+
+
                                         <label>Category</label>
                                         <Input
                                             type="select"

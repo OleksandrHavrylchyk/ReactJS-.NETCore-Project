@@ -29,6 +29,7 @@ namespace WebApplication.Controllers
             var minPrice = source.Min(p => p.Price);
 
             Dictionary<string, float> prices = new Dictionary<string, float>();
+
             prices.Add("max", maxPrice);
             prices.Add("min", minPrice);
 
