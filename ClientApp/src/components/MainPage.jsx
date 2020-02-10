@@ -77,7 +77,6 @@ export default class MainPage extends React.Component {
             else {
                 toast.error("For some reason now you can not view products");
             }
-            toast.error("For some reason now you can not view products");
             this.setState({
                 loading: false,
             })
