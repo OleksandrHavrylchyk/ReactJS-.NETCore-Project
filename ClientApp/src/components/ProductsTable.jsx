@@ -38,6 +38,7 @@ export default class ProductsTable extends React.Component {
             })
             toast.success(response.data);
             this.props.getData()
+            this.props.getCategories();
         }
         catch (error) {
             toast.error("For some reason now you can not delete product");
@@ -78,6 +79,7 @@ export default class ProductsTable extends React.Component {
             toast.success("Saved");
             await this.setState({ showModalEdit: !this.state.showModalEdit });
             await this.props.getData();
+            await this.props.getCategories();
         } catch (error) {
             toast.error('You cannot edit product');
         }
@@ -139,6 +141,10 @@ export default class ProductsTable extends React.Component {
 
     render() {
         let products = this.props.products;
+        let noProductsFlag = "hidden";
+        if (this.props.noProducts) {
+            noProductsFlag = "visible";
+        }
         return (
             <div>
                 <Table>
@@ -153,15 +159,15 @@ export default class ProductsTable extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map((item) => {
+                        {products.map((item, i) => {
                             return (
                             <tr>
-                                <th scope="row">{item.id}</th>
+                                <th scope="row" key={i}>{item.id}</th>
                                 <td>{item.productName}</td>
                                 <td>{item.description}</td>
                                 <td>{item.category.categoryName}</td>
                                     <td>{item.price}</td>
-                                    <td>
+                                    <td style={{ display: "flex", justifyContent: "space-between" }}>
                                         <Button className="DeleteButton" color="danger" onClick={() => this.showModalDelete(item)}><MdDeleteForever /></Button>
                                         <Button className="EditButton" color="primary" onClick={() => this.showModalEdit(item)}><FaEdit /></Button>
                                 </td>
@@ -170,6 +176,7 @@ export default class ProductsTable extends React.Component {
                         })}
                     </tbody>
                 </Table>
+                <div className="noProducts" style={{ visibility: noProductsFlag }}>NOTHING FOUND</div>
                 <div>
                     <Modal isOpen={this.state.showModalDelete}>
                         <ModalBody>
