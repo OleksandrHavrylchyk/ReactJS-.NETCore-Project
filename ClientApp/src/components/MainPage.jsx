@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 import ClipLoader from 'react-spinners/ClipLoader';
 import { css } from '@emotion/core';
@@ -61,7 +61,7 @@ export default class MainPage extends React.Component {
                     sort: this.state.sorting ? this.state.sorting : null,
                     category: this.state.filterCategory ? this.state.filterCategory : null,
                     price: this.state.searchPriceFlag ? (this.state.sendSearchPrice["min"] + "-" + this.state.sendSearchPrice["max"]).replace(/\./g, ',') : null,
-                },
+                }
             });
             await this.setState({
                 products: response.data.products,
@@ -81,7 +81,6 @@ export default class MainPage extends React.Component {
             else {
                 toast.error("For some reason now you can not view products");
             }
-            toast.error("For some reason now you can not view products");
             this.setState({
                 loading: false,
             })
@@ -213,7 +212,6 @@ export default class MainPage extends React.Component {
                 curentpage: 1,
             });
         }
-        console.log(this.state.filterCategory);
         this.getData();
     }
     validate = () => {
@@ -268,8 +266,92 @@ export default class MainPage extends React.Component {
             visibpag = 'hidden'
         }
         return (
-            <Container>
-                <ProductsTable
+            <div>
+                <section>
+                    <article>
+                        <Row>
+                            <Col><div className="divButton"><Button className="AddButton" color="warning" onClick={this.showModal}>Add</Button> </div>
+                                <div>
+                                    <Modal isOpen={this.state.showModal}>
+                                        <ModalHeader>Add product</ModalHeader>
+                                        <ModalBody>
+                                            <Form onSubmit={this.handleSubmit}>
+                                                <label>Product name</label>
+                                                <Input
+                                                    type="productName"
+                                                    name="productName"
+                                                    required
+                                                    onChange={(e) => this.addField(e)}
+                                                    placeholder="Enter product name"
+                                                />
+
+                                                <div style={{ fontSize: 12, color: "red" }}>
+                                                    {this.state.productNameError}
+                                                </div>
+
+                                                <label>Description</label>
+                                                <Input
+                                                    type="description"
+                                                    name="description"
+                                                    required
+                                                    onChange={(e) => this.addField(e)}
+                                                    placeholder="Enter product description"
+                                                />
+                                                <div style={{ fontSize: 12, color: "red" }}>
+                                                    {this.state.descriptionError}
+                                                </div>
+
+
+                                                <label>Price</label>
+                                                <Input
+                                                    type="number"
+                                                    name="price"
+                                                    required
+                                                    onChange={(e) => this.addField(e)}
+                                                    placeholder="Enter product price"
+                                                />
+
+                                                <div style={{ fontSize: 12, color: "red" }}>
+                                                    {this.state.priceError}
+                                                </div>
+
+
+                                                <label>Category</label>
+                                                <Input
+                                                    type="select"
+                                                    name="categoryID"
+                                                    onChange={(e) => this.addCategory(e)}>
+                                                    {this.state.categories.map((item) => {
+                                                        return <option key={item.id}>{item.categoryName}</option>;
+                                                    })}
+                                                </Input>
+
+                                            </Form>
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <Button color="primary" onClick={this.saveForm} > Add </Button>{' '}
+                                            <Button color="secondary" onClick={this.showModal}>Cancel</Button>
+                                        </ModalFooter>
+                                    </Modal>
+                                </div>
+                            </Col>
+
+                            <Col>
+                                <form action="" autoComplete="on">
+                                    <div className="Searcher" style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <input id="search"
+                                            name="search"
+                                            type="text"
+                                            placeholder="Search by name"
+                                            onChange={(event) => { this.searchData(event) }}
+                                        />
+                                        <FaSearch style={{ margin: "auto", fontSize: "30px", paddingLeft: "10px" }} />
+                                    </div>
+                                </form>
+                            </Col>
+
+                        </Row>
+                 <ProductsTable
                     products={this.state.products}
                     getData={this.getData}
                     getCategories={this.getCategories}
@@ -296,75 +378,14 @@ export default class MainPage extends React.Component {
                             </div>
                         </Col>
                 </Row>
-                <Row>
-                    <Col><Button className="AddButton" color="warning" onClick={this.showModal}><IoMdAdd /></Button>
-                    <div>
-                        <Modal isOpen={this.state.showModal}>
-                            <ModalHeader>Add product</ModalHeader>
-                                <ModalBody>
-                                    <Form onSubmit={this.handleSubmit}>
-                                        <label>Product name</label>
-                                        <Input
-                                            type="productName"
-                                            name="productName"
-                                            required
-                                            onChange={(e) => this.addField(e)}
-                                            placeholder="Enter product name"
-                                        />
 
-                                        <div style={{ fontSize: 12, color: "red" }}>
-                                            {this.state.productNameError}
-                                        </div>
+                
+                </article>
 
-                                        <label>Description</label>
-                                        <Input
-                                            type="description"
-                                            name="description"
-                                            required
-                                            onChange={(e) => this.addField(e)}
-                                            placeholder="Enter product description" 
-                                        />
-                                        <div style={{ fontSize: 12, color: "red" }}>
-                                            {this.state.descriptionError}
-                                        </div>
-                                        
+                <aside>
 
-                                        <label>Price</label>
-                                        <Input
-                                            type="number"
-                                            name="price"
-                                            required
-                                            onChange={(e) => this.addField(e)}
-                                            placeholder="Enter product price"
-                                        />
-
-                                        <div style={{ fontSize: 12, color: "red" }}>
-                                            {this.state.priceError}
-                                        </div>
-
-
-                                        <label>Category</label>
-                                        <Input
-                                            type="select"
-                                            name="categoryID"
-                                            onChange={(e) => this.addCategory(e)}>
-                                            {this.state.categories.map((item) => {
-                                                return <option key={item.id}>{item.categoryName}</option>;
-                                            })}
-                                        </Input>
-
-                                    </Form>
-                                </ModalBody>
-                                <ModalFooter>
-                                    <Button color="primary" onClick={this.saveForm} > Add </Button>{' '}
-                                    <Button color="secondary" onClick={this.showModal}>Cancel</Button>
-                            </ModalFooter>
-                        </Modal>
-                    </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
+                        <legend>Price</legend>
+                        <Col>
                         <InputRange
                             draggableTrack
                             step={0.5}
@@ -373,59 +394,47 @@ export default class MainPage extends React.Component {
                             onChange={value => this.setState({ searchPrice: value })}
                             value={this.state.searchPrice} />
                     </Col>
-                    <Col>
-                        <form action="" autoComplete="on">
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <input id="search"
-                                    name="search"
-                                    type="text"
-                                    placeholder="Search by name"
-                                    onChange={(event) => { this.searchData(event) }}
-                                />
-                                <FaSearch style={{ margin: "auto", fontSize: "40px", paddingLeft: "5px" }} />
-                            </div>
-                        </form>
-                    </Col>
-                </Row>
-                <div>{this.state.searchPrice["min"]}</div>
-                <div>{this.state.searchPrice["max"]}</div>
-                <Button color="secondary" onClick={this.searchByPrice}>OK</Button>
+
+                        
+                <div className="minNumb">{this.state.searchPrice["min"]}</div>
+                <div className="maxNumb">{this.state.searchPrice["max"]}</div>
+                <div className="ButtonNumb"><Button  color="secondary" onClick={this.searchByPrice}>OK</Button></div>
                 <Form>
                     <FormGroup tag="fieldset">
                         <legend>Sort by</legend>
                         <FormGroup check>
                             <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_az")}/>{' '}
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_az")} />{' '}
                                 Product name <FaSortAlphaDown />
                             </Label>
                         </FormGroup>
                         <FormGroup check>
                             <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_za")}/>{' '}
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_za")} />{' '}
                                 Product name <FaSortAlphaUp />
                             </Label>
                         </FormGroup>
                         <FormGroup check>
                             <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_az")}/>{' '}
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_az")} />{' '}
                                 Category <FaSortAlphaDown />
                             </Label>
                         </FormGroup>
                         <FormGroup check>
                             <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_za")}/>{' '}
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_za")} />{' '}
                                 Category <FaSortAlphaUp />
                             </Label>
                         </FormGroup>
                         <FormGroup check>
                             <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("expensive")}/>{' '}
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("expensive")} />{' '}
                                 From expensive to cheap
                             </Label>
                         </FormGroup>
                         <FormGroup check>
                             <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("cheap")}/>{' '}
+                                <Input type="radio" name="radio" onClick={() => this.sortBy("cheap")} />{' '}
                                 From cheap to expensive
                             </Label>
                         </FormGroup>
@@ -446,7 +455,10 @@ export default class MainPage extends React.Component {
                         })}
                     </FormGroup>
                 </Form>
-                </Container>
+
+                </aside>
+              </section>
+            </div>
             )
     }
 };

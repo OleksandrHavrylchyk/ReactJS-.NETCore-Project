@@ -42,6 +42,8 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Compile Remove="Migrations\20200209192213_Front.cs" />
+    <Compile Remove="Migrations\20200209192213_Front.Designer.cs" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

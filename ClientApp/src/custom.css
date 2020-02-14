@@ -32,7 +32,7 @@ span {
     }
 
 div.col {
-    padding-top: 30px;
+    padding-top: 20px;
     display: flex;
     align-items: center;
     justify-content: center
@@ -58,7 +58,7 @@ span.Nexter:hover {
     color: red;
 }
 
-.EditButton, .AddButton, .DeleteButton {
+.EditButton, .DeleteButton {
     width: 50px;
 }
 .noProducts {
@@ -72,4 +72,68 @@ span.Nexter:hover {
     visibility: hidden;
 }
 
+.AddButton {
+    height: 35px;
+    width: 80px;
+}
 
+.divButton {
+    float: left;
+    padding-bottom: 20px;
+}
+
+.noProducts {
+    font-size: 25px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.input-range__label-container {
+    visibility: hidden;
+}
+
+aside {
+    padding-top: 20px;
+    float: left;
+    width: 18%;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 50px;
+    flex-shrink: 0;
+    border-right: 1px solid #e9e9e9;
+    border-bottom: 1px solid #e9e9e9;
+
+}
+
+article {
+    float: right;
+    width: 80%;
+    padding-right: 20px;
+
+}
+
+div .Searcher{
+    padding-bottom: 20px;
+}
+
+#search {
+    padding-left: 24px;
+    width: 900px;
+    height: 35px;
+    font-size: 15px;
+}
+
+.minNumb{
+    float: left;
+}
+
+.maxNumb {
+    float: right;
+}
+.ButtonNumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 30px;
+}
