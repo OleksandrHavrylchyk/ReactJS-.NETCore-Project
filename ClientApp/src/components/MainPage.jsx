@@ -15,7 +15,7 @@ import { axiosInstance } from '../axiosConfiguration';
 import { IoMdAdd } from 'react-icons/io';
 import {
     FaArrowLeft, FaArrowRight, FaSearch, FaSortAlphaDown,
-    FaSortAlphaUp, FaSortNumericDown, FaSortNumericUp } from 'react-icons/fa';
+    FaSortAlphaUp } from 'react-icons/fa';
 
 const override = css`
     display: block;
@@ -28,25 +28,27 @@ export default class MainPage extends React.Component {
         super(props);
 
         this.state = {
-            numberofpages: 0,
-            curentpage: 1,
-            products: [],
             categories: [],
+            categoryID: 1,
+            curentpage: 1,
+            description: '',
+            descriptionError: '',
+            filterCategory: [],
+            loading: true,
+            numberofpages: 0,
+            productName: '',
+            price: 0,
             pricesForFilter: [],
+            priceError: '',
+            productNameError: '',
+            products: [],
             searchPrice: {
                 min: 0,
-                max: 50,
+                max: 1,
             },
             searchPriceFlag: false,
-            showModal: false,
-            productName: '',
-            description: '',
-            price: 0,
-            categoryID: 1,
-            loading: true,
-            productNameError: '',
-            descriptionError: '',
-            priceError: '',
+            sendSearchPrice: {},
+            showModal: false,  
         };
     }
 
@@ -58,8 +60,8 @@ export default class MainPage extends React.Component {
                     search: this.state.searchName ? this.state.searchName : null,
                     sort: this.state.sorting ? this.state.sorting : null,
                     category: this.state.filterCategory ? this.state.filterCategory : null,
-                    price: this.state.searchPriceFlag ? (this.state.searchPrice["min"] + "-" + this.state.searchPrice["max"]).replace(/\./g, ',') : null,
-                }
+                    price: this.state.searchPriceFlag ? (this.state.sendSearchPrice["min"] + "-" + this.state.sendSearchPrice["max"]).replace(/\./g, ',') : null,
+                },
             });
             await this.setState({
                 products: response.data.products,
@@ -185,6 +187,7 @@ export default class MainPage extends React.Component {
         await this.setState({
             curentpage: 1,
             searchPriceFlag: true,
+            sendSearchPrice: this.state.searchPrice,
         });
         this.getData();
     }
@@ -194,11 +197,23 @@ export default class MainPage extends React.Component {
         });
         this.getData();
     }
-    filterByCategory = async (category) => {
-        await this.setState({
-            filterCategory: category,
-            curentpage: 1,
-        });
+    filterByCategory = async (event, category) => {
+        let categories = this.state.filterCategory;
+        if (event.target.checked) {
+            categories.push(category);
+            await this.setState({
+                filterCategory: categories,
+                curentpage: 1,
+            });
+        }
+        else {
+            let index = categories.indexOf(category);
+            await this.setState({
+                filterCategory: categories.slice(0, index).concat(categories.slice(index + 1, categories.length)),
+                curentpage: 1,
+            });
+        }
+        console.log(this.state.filterCategory);
         this.getData();
     }
     validate = () => {
@@ -234,7 +249,7 @@ export default class MainPage extends React.Component {
         let pages = []
         for (let i = 1; i <= this.state.numberofpages; i++) {
             let colr = 'steelblue';
-            if (this.state.curentpage == i) {
+            if (this.state.curentpage === i) {
                 colr = 'red'
             }
             pages.push(
@@ -423,18 +438,12 @@ export default class MainPage extends React.Component {
                             return (
                                 <FormGroup key={i} check>
                                     <Label check>
-                                        <Input type="radio" name="radio" onClick={() => this.filterByCategory(item.categoryName)} />{' '}
+                                        <Input type="checkbox" name="checkbox" onChange={(event) => this.filterByCategory(event, item.categoryName)} />{' '}
                                         {item.categoryName}
                                     </Label>
                                 </FormGroup>
                             )
                         })}
-                        <FormGroup check>
-                            <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.filterByCategory(null)}/>{' '}
-                                Cancel
-                            </Label>
-                        </FormGroup>
                     </FormGroup>
                 </Form>
                 </Container>
