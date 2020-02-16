@@ -115,11 +115,11 @@ export default class ProductsTable extends React.Component {
         let descriptionError = '';
         let priceError = '';
 
-        if (!this.state.productName) {
+        if (!this.state.productName || this.state.productName == 0) {
             productNameError = 'Name is empty!';
         }
 
-        if (!this.state.description) {
+        if (!this.state.description || this.state.description == 0) {
             descriptionError = 'Description is empty!';
         }
 
@@ -201,6 +201,7 @@ export default class ProductsTable extends React.Component {
                                     onChange={(e) => this.updateField(e)}
                                     placeholder="Enter product name"
                                     value={this.state.productName}
+                                    
                                 />
 
                                 <div style={{ fontSize: 12, color: "red" }}>
