@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Models;
 
-namespace WebApplication.Controllers
+namespace WebApplication.Models
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -22,7 +22,7 @@ namespace WebApplication.Controllers
 
         // GET: api/Categories
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categories>>> GetCategory()
+        public ActionResult<IEnumerable<Categories>> GetCategory()
         {
             IQueryable<Products> source = _context.Product.Include(x => x.Category);
             var maxPrice = source.Max(p => p.Price);
@@ -33,11 +33,13 @@ namespace WebApplication.Controllers
             prices.Add("max", maxPrice);
             prices.Add("min", minPrice);
 
-            var categories = await _context.Category.ToListAsync();
+            IQueryable<Categories> categories = _context.Category.OrderBy(c => c.ID);
 
-            Dictionary<string, object> response = new Dictionary<string, object>(); 
-            response.Add("categories", categories);
-            response.Add("prices", prices);
+            CategoriesAndPrice response = new CategoriesAndPrice
+            {
+                Categories = categories,
+                Prices = prices
+            };
             return Ok(response);
         }
     }
