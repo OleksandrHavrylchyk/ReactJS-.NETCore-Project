@@ -496,8 +496,6 @@ export default class MainPage extends React.Component {
                                     ><FaArrowRight /></span>
                                 </div>
                             </Col>
-
-
                         </Row>
                     </div>
                 </div>
