@@ -226,11 +226,19 @@ export default class MainPage extends React.Component {
     };
 
 
-    onLowerBoundChange = (event) => {
-        this.setState({ pricesForFilter: { min: +event.target.value }});
+    onLowerBoundChange = async (event) => {
+        let priceDict = {
+            min: event.target.value,
+            max: this.state.searchPrice["max"],
+        }
+        await this.setState({ searchPrice: priceDict });
     }
-    onUpperBoundChange = (event) => {
-        this.setState({ pricesForFilter: { max: +event.target.value }});
+    onUpperBoundChange = async (event) => {
+        let priceDict = {
+            min: this.state.searchPrice["min"],
+            max: event.target.value,
+        }
+        await this.setState({ searchPrice: priceDict});
     }
     onSliderChange = (value) => {
 
@@ -276,24 +284,28 @@ export default class MainPage extends React.Component {
                             <div>
                                 <legend>Price</legend>
                                 <Col>
-
-                                    <Input
-                                        type="number"
-                                        placeholder="Min"
-                                        onChange={this.onLowerBoundChange}
-                                        value={this.state.pricesForFilter["min"]}
-
-                                    />
-                                    <Input
-                                        type="number"
-                                        placeholder="Max"
-                                        onChange={this.onUpperBoundChange}
-                                        value={this.state.pricesForFilter["max"]}
-                                    />
-
+                                    <div style={{ marginBottom: "20px" }}>
+                                        <span className="input_price">
+                                            <Input
+                                                type="number"
+                                                placeholder="Min"
+                                                onChange={this.onLowerBoundChange}
+                                                value={this.state.searchPrice["min"]}
+                                            />
+                                        </span>
+                                        <span>  -</span>
+                                        <span className="input_price">
+                                            <Input
+                                                 type="number"
+                                                 placeholder="Max"
+                                                 onChange={this.onUpperBoundChange}
+                                                 value={this.state.searchPrice["max"]}
+                                             />
+                                        </span>
+                                    </div>
                                     <InputRange
                                         draggableTrack
-                                        step={0.5}
+                                        step={1}
                                         maxValue={this.state.pricesForFilter["max"]}
                                         minValue={this.state.pricesForFilter["min"]}
                                         onChange={this.onSliderChange}

@@ -139,6 +139,16 @@ span.Nexter:hover {
 .divAddButton {
     padding-left: 50px;
 }
+.input_price {
+    width: 80px;
+}
+.input_price input {
+    border-radius: 10px;
+}
+.input_price input:hover {
+    border-radius: 10px;
+    border-color: cornflowerblue;
+}
 @media screen and (max-width: 425px) {
     .header {
         width: 564px;
