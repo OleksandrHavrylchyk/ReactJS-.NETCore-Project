@@ -25,29 +25,35 @@ namespace WebApplication.Models
             [FromQuery(Name = "page")]int page,
             [FromQuery(Name = "search")]string searchString,
             [FromQuery(Name = "sort")]string sortField,
-            [FromQuery(Name = "category")]string searchCategory,
+            [FromQuery(Name = "category[]")]List<string> searchCategory,
             [FromQuery(Name = "price")]string searchPrice)
         {
-            int pageSize = 5;
-            IQueryable<Products> source = _context.Product.Include(x => x.Category);
-            if (!String.IsNullOrEmpty(searchString))
+            try
             {
-                source = source.Where(p => p.ProductName.Contains(searchString));
-            }
-            if (!String.IsNullOrEmpty(searchCategory))
-            {
-                source = source.Where(p => p.Category.CategoryName.Contains(searchCategory));
-            }
-            if (!String.IsNullOrEmpty(searchPrice))
-            {
-                int index = searchPrice.IndexOf("-");
-                float firstValue = (float)Convert.ToDouble(searchPrice.Substring(0, index));
-                float lastValue = (float)Convert.ToDouble(searchPrice.Substring(index + 1));
-                source = source.Where(p => p.Price >= firstValue && p.Price <= lastValue);
-            }
-            if (!String.IsNullOrEmpty(sortField))
-            {
-                switch (sortField)
+                int pageSize = 5;
+                IQueryable<Products> source = _context.Product.Include(x => x.Category);
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    source = source.Where(p => p.ProductName.Contains(searchString));
+                }
+                if (searchCategory.Count > 0)
+                {
+                    IQueryable<Products> allProducts = source.Where(p => p.Category.CategoryName.Contains(searchCategory.First()));
+                    foreach (var category in searchCategory.Skip(1))
+                    {
+                        allProducts = allProducts.Concat(source.Where(p => p.Category.CategoryName.Contains(category)));
+                    }
+                    source = allProducts;
+                }
+                if (!String.IsNullOrEmpty(searchPrice))
+                {
+                    var prices = searchPrice.Split("-");
+                    source = source.Where(p => p.Price >= (float)Convert.ToDouble(prices[0])
+                    && p.Price <= (float)Convert.ToDouble(prices[1]));
+                }
+                if (!String.IsNullOrEmpty(sortField))
+                {
+                    switch (sortField)
                     {
                         case "expensive":
                             source = source.OrderByDescending(s => s.Price);
@@ -67,24 +73,28 @@ namespace WebApplication.Models
                         case "category_za":
                             source = source.OrderByDescending(s => s.Category.CategoryName);
                             break;
+                    }
+                }
+                var count = await source.CountAsync();
+                var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+                if (pageViewModel.PageNumber <= pageViewModel.TotalPages && pageViewModel.PageNumber > 0)
+                {
+                    IndexViewModel viewModel = new IndexViewModel
+                    {
+                        PageViewModel = pageViewModel,
+                        Products = items
+                    };
+                    return Ok(viewModel);
+                }
+                else
+                {
+                    return BadRequest("Page does not exist");
                 }
             }
-            var count = await source.CountAsync();
-            var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            if(pageViewModel.PageNumber <= pageViewModel.TotalPages && pageViewModel.PageNumber > 0) 
+            catch (Exception e)
             {
-                IndexViewModel viewModel = new IndexViewModel
-                {
-                    PageViewModel = pageViewModel,
-                    Products = items
-                };
-                return Ok(viewModel);
-            }
-            else
-            {
-                return BadRequest("Page does not exist");
+                return BadRequest(e);
             }
         }
 
@@ -92,11 +102,6 @@ namespace WebApplication.Models
         [HttpPut]
         public async Task<IActionResult> PutProducts([FromQuery(Name = "id")]int id, Products products)
         {
-            if (id != products.ID)
-            {
-                return BadRequest();
-            }
-
             _context.Entry(products).State = EntityState.Modified;
 
             try
@@ -141,12 +146,12 @@ namespace WebApplication.Models
         {
             try
             {
-                var products = await _context.Product.FindAsync(productId);
-                if (products == null)
+                var product = await _context.Product.FindAsync(productId);
+                if (product == null)
                 {
                     return NotFound();
                 }
-                _context.Product.Remove(products);
+                _context.Product.Remove(product);
                 await _context.SaveChangesAsync();
                 return Ok("Successfully deleted");
             }

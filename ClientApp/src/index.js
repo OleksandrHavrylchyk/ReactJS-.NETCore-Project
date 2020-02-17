@@ -17,8 +17,8 @@ toast.configure({
     draggable: true,
 })
 
-const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
-const rootElement = document.getElementById('root');
+//const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
+//const rootElement = document.getElementById('root');
 
 ReactDOM.render(<Routes />, document.getElementById('root'))
 

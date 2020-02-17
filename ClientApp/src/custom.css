@@ -59,6 +59,16 @@ span.Nexter:hover {
 .EditButton, .DeleteButton {
     width: 50px;
 }
+.noProducts {
+    font-size: 25px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.input-range__label-container {
+    visibility: hidden;
+}
 
 .AddButton {
     height: 35px;
@@ -67,6 +77,7 @@ span.Nexter:hover {
 
 .divButton {
     float: left;
+    padding-left: 28px;
     padding-bottom: 20px;
 }
 

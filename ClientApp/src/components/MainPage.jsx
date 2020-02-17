@@ -1,20 +1,21 @@
-﻿import { css } from '@emotion/core';
 import React from 'react';
-import { FaArrowLeft, FaArrowRight, FaSearch, FaSortAlphaDown, FaSortAlphaUp } from 'react-icons/fa';
-import { IoMdAdd } from 'react-icons/io';
+
+import ClipLoader from 'react-spinners/ClipLoader';
+import { css } from '@emotion/core';
+import { Button, Input, Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label } from 'reactstrap';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'react-toastify';
-import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { axiosInstance } from '../axiosConfiguration';
-
-import '../custom.css';
-import '../menu.css';
 
 import ProductsTable from "./ProductsTable";
+import '../custom.css';
+import '../menu.css';
+import { axiosInstance } from '../axiosConfiguration';
 
 
+import {
+    FaArrowLeft, FaArrowRight, FaSearch, FaSortAlphaDown,
+    FaSortAlphaUp } from 'react-icons/fa';
 
 const override = css`
     display: block;
@@ -27,25 +28,27 @@ export default class MainPage extends React.Component {
         super(props);
 
         this.state = {
-            numberofpages: 0,
-            curentpage: 1,
-            products: [],
             categories: [],
+            categoryID: 1,
+            curentpage: 1,
+            description: '',
+            descriptionError: '',
+            filterCategory: [],
+            loading: true,
+            numberofpages: 0,
+            productName: '',
+            price: 0,
             pricesForFilter: [],
+            priceError: '',
+            productNameError: '',
+            products: [],
             searchPrice: {
                 min: 0,
-                max: 50,
+                max: 1,
             },
             searchPriceFlag: false,
-            showModal: false,
-            productName: '',
-            description: '',
-            price: 0,
-            categoryID: 1,
-            loading: true,
-            productNameError: '',
-            descriptionError: '',
-            priceError: '',
+            sendSearchPrice: {},
+            showModal: false,  
         };
     }
 
@@ -57,7 +60,7 @@ export default class MainPage extends React.Component {
                     search: this.state.searchName ? this.state.searchName : null,
                     sort: this.state.sorting ? this.state.sorting : null,
                     category: this.state.filterCategory ? this.state.filterCategory : null,
-                    price: this.state.searchPriceFlag ? (this.state.searchPrice["min"] + "-" + this.state.searchPrice["max"]).replace(/\./g, ',') : null,
+                    price: this.state.searchPriceFlag ? (this.state.sendSearchPrice["min"] + "-" + this.state.sendSearchPrice["max"]).replace(/\./g, ',') : null,
                 }
             });
             await this.setState({
@@ -183,6 +186,7 @@ export default class MainPage extends React.Component {
         await this.setState({
             curentpage: 1,
             searchPriceFlag: true,
+            sendSearchPrice: this.state.searchPrice,
         });
         this.getData();
     }
@@ -193,11 +197,22 @@ export default class MainPage extends React.Component {
         });
         this.getData();
     }
-    filterByCategory = async (category) => {
-        await this.setState({
-            filterCategory: category,
-            curentpage: 1,
-        });
+    filterByCategory = async (event, category) => {
+        let categories = this.state.filterCategory;
+        if (event.target.checked) {
+            categories.push(category);
+            await this.setState({
+                filterCategory: categories,
+                curentpage: 1,
+            });
+        }
+        else {
+            let index = categories.indexOf(category);
+            await this.setState({
+                filterCategory: categories.slice(0, index).concat(categories.slice(index + 1, categories.length)),
+                curentpage: 1,
+            });
+        }
         this.getData();
     }
     validate = () => {
@@ -255,7 +270,7 @@ export default class MainPage extends React.Component {
         let pages = []
         for (let i = 1; i <= this.state.numberofpages; i++) {
             let colr = 'steelblue';
-            if (this.state.curentpage == i) {
+            if (this.state.curentpage === i) {
                 colr = 'red'
             }
             pages.push(
@@ -366,24 +381,19 @@ export default class MainPage extends React.Component {
                                             return (
                                                 <FormGroup key={i} check>
                                                     <Label check>
-                                                        <Input type="radio" name="radio" onClick={() => this.filterByCategory(item.categoryName)} />{' '}
+                                                        <Input type="checkbox" name="checkbox" onChange={(event) => this.filterByCategory(event, item.categoryName)} />{' '}
                                                         {item.categoryName}
                                                     </Label>
                                                 </FormGroup>
                                             )
                                         })}
-                                        <FormGroup check>
-                                            <Label check>
-                                                <Input type="radio" name="radio" onClick={() => this.filterByCategory(null)} />{' '}
-                                                Cancel
-                            </Label>
-                                        </FormGroup>
                                     </FormGroup>
                                 </Form>
 
                                 <legend>Add row</legend>
                                 <div className="divAddButton">
-                                    <Col><div className="divButton"><Button className="AddButton" color="warning" onClick={this.showModal}>Add</Button> </div>
+                                    <Col>
+                                        <div className="divButton"><Button className="AddButton" color="warning" onClick={this.showModal}>Add</Button> </div>
                                         <div>
                                             <Modal isOpen={this.state.showModal}>
                                                 <ModalHeader>Add product</ModalHeader>
