@@ -9,10 +9,10 @@ import { toast } from 'react-toastify';
 
 import ProductsTable from "./ProductsTable";
 import '../custom.css';
+import '../menu.css';
 import { axiosInstance } from '../axiosConfiguration';
 
 
-import { IoMdAdd } from 'react-icons/io';
 import {
     FaArrowLeft, FaArrowRight, FaSearch, FaSortAlphaDown,
     FaSortAlphaUp } from 'react-icons/fa';
@@ -190,6 +190,7 @@ export default class MainPage extends React.Component {
         });
         this.getData();
     }
+
     sortBy = async (flag) => {
         await this.setState({
             sorting: flag,
@@ -219,11 +220,11 @@ export default class MainPage extends React.Component {
         let descriptionError = '';
         let priceError = '';
 
-        if (!this.state.productName) {
+        if (!this.state.productName || this.state.productName == 0) {
             productNameError = 'Name is empty!';
         }
 
-        if (!this.state.description) {
+        if (!this.state.description || this.state.description == 0) {
             descriptionError = 'Description is empty!';
         }
 
@@ -239,6 +240,28 @@ export default class MainPage extends React.Component {
         return false;
     };
 
+
+    onLowerBoundChange = async (event) => {
+        let priceDict = {
+            min: event.target.value,
+            max: this.state.searchPrice["max"],
+        }
+        await this.setState({ searchPrice: priceDict });
+    }
+    onUpperBoundChange = async (event) => {
+        let priceDict = {
+            min: this.state.searchPrice["min"],
+            max: event.target.value,
+        }
+        await this.setState({ searchPrice: priceDict});
+    }
+    onSliderChange = (value) => {
+
+        this.setState({
+            searchPrice: value
+        });
+    }
+    
     handleSubmit = (event) => {
         event.preventDefault();
     };
@@ -267,76 +290,189 @@ export default class MainPage extends React.Component {
         }
         return (
             <div>
-                <section>
-                    <article>
-                        <Row>
-                            <Col><div className="divButton"><Button className="AddButton" color="warning" onClick={this.showModal}>Add</Button> </div>
-                                <div>
-                                    <Modal isOpen={this.state.showModal}>
-                                        <ModalHeader>Add product</ModalHeader>
-                                        <ModalBody>
-                                            <Form onSubmit={this.handleSubmit}>
-                                                <label>Product name</label>
-                                                <Input
-                                                    type="productName"
-                                                    name="productName"
-                                                    required
-                                                    onChange={(e) => this.addField(e)}
-                                                    placeholder="Enter product name"
-                                                />
 
-                                                <div style={{ fontSize: 12, color: "red" }}>
-                                                    {this.state.productNameError}
-                                                </div>
+                <div className="menu-wrap">
+                    <input type="checkbox" className="toggler" />
+                    <div className="hamburger"><div></div></div>
+                    <div className="menu1">
+                        <div>
+                            <div>
+                                <legend>Price</legend>
+                                <Col>
+                                    <div style={{ marginBottom: "20px" }}>
+                                        <span className="input_price">
+                                            <Input
+                                                type="number"
+                                                placeholder="Min"
+                                                onChange={this.onLowerBoundChange}
+                                                value={this.state.searchPrice["min"]}
+                                            />
+                                        </span>
+                                        <span>  -</span>
+                                        <span className="input_price">
+                                            <Input
+                                                 type="number"
+                                                 placeholder="Max"
+                                                 onChange={this.onUpperBoundChange}
+                                                 value={this.state.searchPrice["max"]}
+                                             />
+                                        </span>
+                                    </div>
+                                    <InputRange
+                                        draggableTrack
+                                        step={1}
+                                        maxValue={this.state.pricesForFilter["max"]}
+                                        minValue={this.state.pricesForFilter["min"]}
+                                        onChange={this.onSliderChange}
+                                        value={this.state.searchPrice} />
 
-                                                <label>Description</label>
-                                                <Input
-                                                    type="description"
-                                                    name="description"
-                                                    required
-                                                    onChange={(e) => this.addField(e)}
-                                                    placeholder="Enter product description"
-                                                />
-                                                <div style={{ fontSize: 12, color: "red" }}>
-                                                    {this.state.descriptionError}
-                                                </div>
+                                    
+                                </Col>
+                                
+                                <div className="minNumb">{this.state.searchPrice["min"]}</div>
+                                <div className="maxNumb">{this.state.searchPrice["max"]}</div>
+                                <div className="ButtonNumb"><Button color="secondary" onClick={this.searchByPrice}>Apply</Button></div>
+
+                                <Form>
+                                    <FormGroup tag="fieldset">
+                                        <legend>Sort by</legend>
+                                        <FormGroup check>
+                                            <Label check>
+                                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_az")} />{' '}
+                                                Product name <FaSortAlphaDown />
+                                            </Label>
+                                        </FormGroup>
+                                        <FormGroup check>
+                                            <Label check>
+                                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_za")} />{' '}
+                                                Product name <FaSortAlphaUp />
+                                            </Label>
+                                        </FormGroup>
+                                        <FormGroup check>
+                                            <Label check>
+                                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_az")} />{' '}
+                                                Category <FaSortAlphaDown />
+                                            </Label>
+                                        </FormGroup>
+                                        <FormGroup check>
+                                            <Label check>
+                                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_za")} />{' '}
+                                                Category <FaSortAlphaUp />
+                                            </Label>
+                                        </FormGroup>
+                                        <FormGroup check>
+                                            <Label check>
+                                                <Input type="radio" name="radio" onClick={() => this.sortBy("expensive")} />{' '}
+                                                From expensive to cheap
+                                            </Label>
+                                        </FormGroup>
+                                        <FormGroup check>
+                                            <Label check>
+                                                <Input type="radio" name="radio" onClick={() => this.sortBy("cheap")} />{' '}
+                                                From cheap to expensive
+                                            </Label>
+                                        </FormGroup>
+                                    </FormGroup>
+                                </Form>
+                                <Form>
+                                    <FormGroup tag="fieldset">
+                                        <legend>Filter by categories</legend>
+                                        {this.state.categories.map((item, i) => {
+                                            return (
+                                                <FormGroup key={i} check>
+                                                    <Label check>
+                                                        <Input type="checkbox" name="checkbox" onChange={(event) => this.filterByCategory(event, item.categoryName)} />{' '}
+                                                        {item.categoryName}
+                                                    </Label>
+                                                </FormGroup>
+                                            )
+                                        })}
+                                    </FormGroup>
+                                </Form>
+
+                                <legend>Add row</legend>
+                                <div className="divAddButton">
+                                    <Col>
+                                        <div className="divButton"><Button className="AddButton" color="warning" onClick={this.showModal}>Add</Button> </div>
+                                        <div>
+                                            <Modal isOpen={this.state.showModal}>
+                                                <ModalHeader>Add product</ModalHeader>
+                                                <ModalBody>
+                                                    <Form onSubmit={this.handleSubmit}>
+                                                        <label>Product name</label>
+                                                        <Input
+                                                            type="productName"
+                                                            name="productName"
+                                                            required
+                                                            onChange={(e) => this.addField(e)}
+                                                            placeholder="Enter product name"
+                                                        />
+
+                                                        <div style={{ fontSize: 12, color: "red" }}>
+                                                            {this.state.productNameError}
+                                                        </div>
+
+                                                        <label>Description</label>
+                                                        <Input
+                                                            type="description"
+                                                            name="description"
+                                                            required
+                                                            onChange={(e) => this.addField(e)}
+                                                            placeholder="Enter product description"
+                                                        />
+                                                        <div style={{ fontSize: 12, color: "red" }}>
+                                                            {this.state.descriptionError}
+                                                        </div>
 
 
-                                                <label>Price</label>
-                                                <Input
-                                                    type="number"
-                                                    name="price"
-                                                    required
-                                                    onChange={(e) => this.addField(e)}
-                                                    placeholder="Enter product price"
-                                                />
+                                                        <label>Price</label>
+                                                        <Input
+                                                            type="number"
+                                                            name="price"
+                                                            required
+                                                            onChange={(e) => this.addField(e)}
+                                                            placeholder="Enter product price"
+                                                        />
 
-                                                <div style={{ fontSize: 12, color: "red" }}>
-                                                    {this.state.priceError}
-                                                </div>
+                                                        <div style={{ fontSize: 12, color: "red" }}>
+                                                            {this.state.priceError}
+                                                        </div>
 
 
-                                                <label>Category</label>
-                                                <Input
-                                                    type="select"
-                                                    name="categoryID"
-                                                    onChange={(e) => this.addCategory(e)}>
-                                                    {this.state.categories.map((item) => {
-                                                        return <option key={item.id}>{item.categoryName}</option>;
-                                                    })}
-                                                </Input>
+                                                        <label>Category</label>
+                                                        <Input
+                                                            type="select"
+                                                            name="categoryID"
+                                                            onChange={(e) => this.addCategory(e)}>
+                                                            {this.state.categories.map((item) => {
+                                                                return <option key={item.id}>{item.categoryName}</option>;
+                                                            })}
+                                                        </Input>
 
-                                            </Form>
-                                        </ModalBody>
-                                        <ModalFooter>
-                                            <Button color="primary" onClick={this.saveForm} > Add </Button>{' '}
-                                            <Button color="secondary" onClick={this.showModal}>Cancel</Button>
-                                        </ModalFooter>
-                                    </Modal>
+                                                    </Form>
+                                                </ModalBody>
+
+                                                <ModalFooter>
+                                                    <Button color="primary" onClick={this.saveForm} > Add </Button>{' '}
+                                                    <Button color="secondary" onClick={this.showModal}>Cancel</Button>
+                                                </ModalFooter>
+
+                                            </Modal>
+                                        </div>
+                                    </Col>
                                 </div>
-                            </Col>
 
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="header">
+                    <Row className="RowDiv">
+                        <div>
                             <Col>
+
                                 <form action="" autoComplete="on">
                                     <div className="Searcher" style={{ display: "flex", justifyContent: "space-between" }}>
                                         <input id="search"
@@ -349,116 +485,43 @@ export default class MainPage extends React.Component {
                                     </div>
                                 </form>
                             </Col>
+                        </div>
+                    </Row>
+                </div>
 
+                <div className="content">
+                    <div>
+
+                        <ProductsTable
+                            products={this.state.products}
+                            getData={this.getData}
+                            getCategories={this.getCategories}
+                            categories={this.state.categories}
+                            noProducts={this.state.noProducts} />
+                        <ClipLoader
+                            css={override}
+                            sizeUnit={"px"}
+                            size={200}
+                            loading={this.state.loading}
+                        />
+                        <Row>
+                            <Col className="paginationer" style={{ visibility: visibpag }}>
+                                <div actpage={this.state.curentpage}>
+                                    <span className="Prever"
+                                        onClick={(e) => this.changePrevNext(-1)}>
+                                        <FaArrowLeft />
+                                    </span>
+
+                                    {pages}
+                                    <span className="Nexter"
+                                        onClick={(e) => this.changePrevNext(1)}
+                                    ><FaArrowRight /></span>
+                                </div>
+                            </Col>
                         </Row>
-                 <ProductsTable
-                    products={this.state.products}
-                    getData={this.getData}
-                    getCategories={this.getCategories}
-                    categories={this.state.categories}
-                    noProducts={this.state.noProducts} />
-                <ClipLoader
-                    css={override}
-                    sizeUnit={"px"}
-                    size={200}
-                    loading={this.state.loading}
-                />
-                <Row>
-                    <Col style={{ visibility: visibpag }}>
-                        <div  actpage={this.state.curentpage}>
-                            <span className="Prever"
-                             onClick={(e) => this.changePrevNext(-1)}>
-                                <FaArrowLeft />
-                            </span>
-
-                            {pages}
-                            <span className="Nexter"
-                                    onClick={(e) => this.changePrevNext(1)}
-                            ><FaArrowRight /></span>
-                            </div>
-                        </Col>
-                </Row>
-
-                
-                </article>
-
-                <aside>
-
-                        <legend>Price</legend>
-                        <Col>
-                        <InputRange
-                            draggableTrack
-                            step={0.5}
-                            maxValue={this.state.pricesForFilter["max"]}
-                            minValue={this.state.pricesForFilter["min"]}
-                            onChange={value => this.setState({ searchPrice: value })}
-                            value={this.state.searchPrice} />
-                    </Col>
-
-                        
-                <div className="minNumb">{this.state.searchPrice["min"]}</div>
-                <div className="maxNumb">{this.state.searchPrice["max"]}</div>
-                <div className="ButtonNumb"><Button  color="secondary" onClick={this.searchByPrice}>OK</Button></div>
-                <Form>
-                    <FormGroup tag="fieldset">
-                        <legend>Sort by</legend>
-                        <FormGroup check>
-                            <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_az")} />{' '}
-                                Product name <FaSortAlphaDown />
-                            </Label>
-                        </FormGroup>
-                        <FormGroup check>
-                            <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("name_za")} />{' '}
-                                Product name <FaSortAlphaUp />
-                            </Label>
-                        </FormGroup>
-                        <FormGroup check>
-                            <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_az")} />{' '}
-                                Category <FaSortAlphaDown />
-                            </Label>
-                        </FormGroup>
-                        <FormGroup check>
-                            <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("category_za")} />{' '}
-                                Category <FaSortAlphaUp />
-                            </Label>
-                        </FormGroup>
-                        <FormGroup check>
-                            <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("expensive")} />{' '}
-                                From expensive to cheap
-                            </Label>
-                        </FormGroup>
-                        <FormGroup check>
-                            <Label check>
-                                <Input type="radio" name="radio" onClick={() => this.sortBy("cheap")} />{' '}
-                                From cheap to expensive
-                            </Label>
-                        </FormGroup>
-                    </FormGroup>
-                </Form>
-                <Form>
-                    <FormGroup tag="fieldset">
-                        <legend>Filter by categories</legend>
-                        {this.state.categories.map((item, i) => {
-                            return (
-                                <FormGroup key={i} check>
-                                    <Label check>
-                                        <Input type="checkbox" name="checkbox" onChange={(event) => this.filterByCategory(event, item.categoryName)} />{' '}
-                                        {item.categoryName}
-                                    </Label>
-                                </FormGroup>
-                            )
-                        })}
-                    </FormGroup>
-                </Form>
-
-                </aside>
-              </section>
+                    </div>
+                </div>
             </div>
-            )
+        )
     }
 };
