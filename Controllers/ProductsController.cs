@@ -48,8 +48,16 @@ namespace WebApplication.Models
                 if (!String.IsNullOrEmpty(searchPrice))
                 {
                     var prices = searchPrice.Split("-");
-                    source = source.Where(p => p.Price >= (float)Convert.ToDouble(prices[0])
-                    && p.Price <= (float)Convert.ToDouble(prices[1]));
+                    if(prices.Length > 0)
+                    {
+                        source = source.Where(p => p.Price >= (float)Convert.ToDouble(prices[0])
+                        && p.Price <= (float)Convert.ToDouble(prices[1]));
+                    }
+                    else
+                    {
+                        return BadRequest("You didnt choose right price");
+                    }
+
                 }
                 if (!String.IsNullOrEmpty(sortField))
                 {

@@ -28,6 +28,7 @@ export default class MainPage extends React.Component {
         super(props);
 
         this.state = {
+            buttonPrice: false,
             categories: [],
             categoryID: 1,
             curentpage: 1,
@@ -35,6 +36,7 @@ export default class MainPage extends React.Component {
             descriptionError: '',
             filterCategory: [],
             loading: true,
+            inputPrice: {},
             numberofpages: 0,
             productName: '',
             price: 0,
@@ -48,7 +50,7 @@ export default class MainPage extends React.Component {
             },
             searchPriceFlag: false,
             sendSearchPrice: {},
-            showModal: false,  
+            showModal: false,
         };
     }
 
@@ -94,6 +96,7 @@ export default class MainPage extends React.Component {
                 categories: response.data["categories"],
                 pricesForFilter: response.data["prices"],
                 searchPrice: response.data["prices"],
+                inputPrice: response.data["prices"],
             })
         }
         catch(error) {
@@ -183,6 +186,9 @@ export default class MainPage extends React.Component {
     }
 
     searchByPrice = async () => {
+        if (this.state.inputPrice) {
+            await this.setState({ searchPrice: this.state.inputPrice });
+        }
         await this.setState({
             curentpage: 1,
             searchPriceFlag: true,
@@ -243,22 +249,45 @@ export default class MainPage extends React.Component {
 
     onLowerBoundChange = async (event) => {
         let priceDict = {
-            min: event.target.value,
-            max: this.state.searchPrice["max"],
+            min: parseInt(event.target.value),
+            max: this.state.inputPrice["max"],
         }
-        await this.setState({ searchPrice: priceDict });
+        if (priceDict["min"] < priceDict["max"]) {
+            await this.setState({
+                inputPrice: priceDict,
+                buttonPrice: false,
+            });
+        }
+        else {
+            await this.setState({
+                buttonPrice: true,
+                inputPrice: priceDict,
+            });
+        }
     }
     onUpperBoundChange = async (event) => {
         let priceDict = {
-            min: this.state.searchPrice["min"],
-            max: event.target.value,
+            min: this.state.inputPrice["min"],
+            max: parseInt(event.target.value),
         }
-        await this.setState({ searchPrice: priceDict});
+        if (priceDict["max"] > priceDict["min"]) {
+            await this.setState({
+                inputPrice: priceDict,
+                buttonPrice: false,
+            });
+        }
+        else {
+            await this.setState({
+                buttonPrice: true,
+                inputPrice: priceDict,
+            });
+        }
     }
     onSliderChange = (value) => {
 
         this.setState({
-            searchPrice: value
+            searchPrice: value,
+            inputPrice: value,
         });
     }
     
@@ -305,7 +334,7 @@ export default class MainPage extends React.Component {
                                                 type="number"
                                                 placeholder="Min"
                                                 onChange={this.onLowerBoundChange}
-                                                value={this.state.searchPrice["min"]}
+                                                value={this.state.inputPrice["min"]}
                                             />
                                         </span>
                                         <span>  -</span>
@@ -314,7 +343,7 @@ export default class MainPage extends React.Component {
                                                  type="number"
                                                  placeholder="Max"
                                                  onChange={this.onUpperBoundChange}
-                                                 value={this.state.searchPrice["max"]}
+                                                value={this.state.inputPrice["max"]}
                                              />
                                         </span>
                                     </div>
@@ -331,7 +360,7 @@ export default class MainPage extends React.Component {
                                 
                                 <div className="minNumb">{this.state.searchPrice["min"]}</div>
                                 <div className="maxNumb">{this.state.searchPrice["max"]}</div>
-                                <div className="ButtonNumb"><Button color="secondary" onClick={this.searchByPrice}>Apply</Button></div>
+                                <div className="ButtonNumb"><Button color="secondary" onClick={this.searchByPrice} disabled={this.state.buttonPrice}>Apply</Button></div>
 
                                 <Form>
                                     <FormGroup tag="fieldset">
